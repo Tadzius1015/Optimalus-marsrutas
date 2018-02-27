@@ -1,3 +1,4 @@
 # Optimalus-marsrutas
-Dalykai vyksta
 Comming soon ;)
+
+Data - kažkada padarysim
