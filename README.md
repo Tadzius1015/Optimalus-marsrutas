@@ -1,5 +1,5 @@
 # Optimalus-marsrutas
-Comming soon :^)
+Comming soon 
 
 Work in progress - 1.5%
 
