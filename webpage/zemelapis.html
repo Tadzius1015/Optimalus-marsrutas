@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        .logo {
+            width: 180px;
+            height: 124px;
+        }
+
+        .Buttons-Container {
+            margin-bottom: 25px;
+        }
+
+        .Header-Name {
+            font-size: 50px;
+            font-family: 'Microsoft YaHei';
+        }
+
+        .Header {
+        }
+
+        .btn {
+            width: 150px;
+            height: 40px;
+            background-color: #f76700;
+            color: #000000;
+            font-size: 20px;
+            font-family: 'Microsoft YaHei';
+        }
+        #map {
+            height: 800px;
+            width: 85%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="Header">
+                <img class="logo" src="file:///C:/Users/Deividas/Desktop/Project/logomap.jpg" />
+                <a class="Header-Name">
+                    Sveiki atvykę!
+                </a>
+            </div>
+            <div class="Buttons-Container" align="center">
+                <button class="btn" onclick="window.location.href='file:///C:/Users/Deividas/Desktop/Project/zemelapis.html'">Žemėlapis</button>
+                <button class="btn">Apie mus</button>
+                <button class="btn" onclick="window.location.href='file:///C:/Users/Deividas/Desktop/Project/menu.html'">Pradinis</button>
+            </div>
+        </div>
+    </header>
+    <div id="map"></div>
+    <script>
+        function initMap() {
+            var uluru = { lat: 54.902434, lng: 23.940171 };
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 15,
+                center: uluru
+            });
+        }
+    </script>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5BAqtLqrAtsuq0Ya3FPJ2qGXmrLiSgvY&callback=initMap">
+    </script>
+</body>
+</html>
