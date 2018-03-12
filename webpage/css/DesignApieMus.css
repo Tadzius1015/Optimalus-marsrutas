@@ -1,0 +1,26 @@
+﻿.container1
+{
+    text-align: center;
+}
+.text
+{
+    color:#000000;
+    font-size:25px;
+}
+.column{
+    float:left;
+    width:33.3%;
+    padding:10px;
+    height:300px;
+}
+.row:after
+{
+    content:"";
+    display:table;
+    clear:both;
+}
+.personalfotos
+{
+    width:300px;
+    height:300px;
+}

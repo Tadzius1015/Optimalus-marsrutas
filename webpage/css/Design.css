@@ -1,0 +1,26 @@
+﻿.logo {
+    width: 180px;
+    height: 124px;
+    cursor: pointer;
+}
+
+.Buttons-Container {
+    margin-bottom: 25px;
+}
+
+.Header-Name {
+    font-size: 50px;
+    font-family: 'Microsoft YaHei';
+}
+
+.Header {
+}
+
+.btn {
+    width: 150px;
+    height: 40px;
+    background-color: #f76700;
+    color: #000000;
+    font-size: 20px;
+    font-family: 'Microsoft YaHei';
+}
