@@ -131,9 +131,9 @@ function find() {
                     shortestIndex = j;
                 }
                 
-                outputDiv.innerHTML += origins[0] + ' to ' + destinations[j]
+               /* outputDiv.innerHTML += origins[0] + ' to ' + destinations[j]
                             + ': ' + results[j].distance.text + ' in '
-                            + results[j].duration.text + '<br>';
+                            + results[j].duration.text + '<br>';*/
             }
             if (nodes.length > 1) {
                 route.push(nodes[shortestIndex]);
@@ -154,22 +154,22 @@ function printRoute() {
     for (var i = 0; i < routeAdress.length; i++)
         output2.innerHTML += routeAdress[i] + '<br>';
 }
-//Ekrane atvaizduoja marsruta
+//Ekrane isspausdina
 function showRoute() {
-    //output2.innerHTML += nodes.length;
-    /*find();
-    setTimeout(function () {
-        find();
-    }, 500);*/
+    outputDiv.textContent = "";
+    output2.textContent = "";
     var howMany = nodes.length - 1;
+    var t = 200;
     for (var i = 0; i < howMany; i++) {
-        outputDiv.innerHTML += nodes.length;
-        output3.innerHTML += "/";
-        find();
-        
+        if (i > 0)
+            setTimeout(function () {
+                find();
+            },t);
+        else find();
+        t += 200;
     }
-    /*for (var i = 0; i < routeAdress.length; i++)
-        outputDiv.innerHTML += routeAdress[i] + '<br>';*/
+    for (var i = 0; i < routeAdress.length; i++)
+        outputDiv.innerHTML += routeAdress[i] + '<br>';
 }
 // Panaikina zymeklius ir kelius
 function clearMapMarkers() {
@@ -216,8 +216,7 @@ google.maps.event.addDomListener(window, 'load', initializeMap);
             <td id="destinations-count">0</td>
         </tr>
         <tr id="ga-buttons">
-            <td colspan="2"><button onclick="getDurations(originNode, nodes)">Rasti maršrutą</button> <button class="btn" onclick="clearMap()">Išvalyti žemėlapį</button></td>
-            <td colspan="2"><button onclick="printRoute()">Spausdint</button><button class="btn" onclick="showRoute()">Rodyti</button></td>
+            <td colspan="2"><button onclick="showRoute()">Rasti maršrutą</button> <button class="btn" onclick="clearMap()">Išvalyti žemėlapį</button></td>
         </tr>
     </table>
   </div>
