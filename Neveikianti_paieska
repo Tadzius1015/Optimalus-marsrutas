@@ -5,15 +5,17 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 var map;
+var fin;
 var nodes = [];
 var markers = [];
-var route = [];
-var routeAdress = [];
+var durations = [];
+var bestDuration;
+var bestRoute = [];
+var adresses = [];
 var directionsDisplay = null;
 var directionsService;
 var polylinePath;
-var originNode
-var directionsService;
+
 // Sukuriam google maps zemelapi
 function initializeMap() {
     var opts = {
@@ -22,6 +24,7 @@ function initializeMap() {
         streetViewControl: false,
         mapTypeControl: false,
     };
+   
     map = new google.maps.Map(document.getElementById('map-canvas'), opts);
     // Vykdoma paspaudus and zemelapi
     google.maps.event.addListener(map, 'click', function(event) {
@@ -38,67 +41,10 @@ function initializeMap() {
 }
 // Gauna keliones laikus ir atstumus tarp tikslu
 function getDurations(origin, destination) {
-    if (originNode == undefined) {
-        originNode = nodes[0];
-        origin = originNode;
-        nodes.splice(0, 1);
-        destination = nodes;
-        route.push(originNode);
-    }
-    var service = new google.maps.DistanceMatrixService();
-    service.getDistanceMatrix({
-        origins: [origin],
-        destinations: destination,
-        travelMode: 'DRIVING',
-    }, afterFinding)
-}
-function afterFinding(response, status) {
-    if (status != google.maps.DistanceMatrixStatus.OK) {
-        alert('Error was: ' + status);
-    } else {
-        var origins = response.originAddresses;
-        var destinations = response.destinationAddresses;
-        var outputDiv = document.getElementById('outputDiv');
-        //outputDiv.innerHTML = '';
-        routeAdress.push(origins[0]);
-        var temp = 0;
-        var results = response.rows[0].elements;
-        for (var j = 0; j < results.length; j++) {
-            var split = results[j].duration.text.split(" ");
-            if (temp == 0) {
-                temp = split[0];
-                shortestIndex = j;
-            }else if (temp > split[0]) {
-                temp = slit[0];
-                shortestIndex = j;
-            }            
-            outputDiv.innerHTML += origins[0] + ' to ' + destinations[j]
-                            + ': ' + results[j].distance.text + ' in '
-                            + results[j].duration.text + '<br>';
-        }
-        if (nodes.length > 1) {
-            route.push(nodes[shortestIndex]);
-            originNode = nodes[shortestIndex];
-            nodes.splice(shortestIndex, 1);
-            getDurations(originNode, nodes);
-        } else {
-            route.push(nodes[0]);
-            routeAdress.push(destinations[0]);
-        }
-    }
-}
-function getDurations2(origin, destination) {
-    if (originNode == undefined) {
-        originNode = nodes[0];
-        origin = originNode;
-        nodes.splice(0, 1);
-        destination = nodes;
-        route.push(originNode);
-    }
     var service = new google.maps.DistanceMatrixService();
     var d = $.Deferred();
     service.getDistanceMatrix({
-        origins: [origin],
+        origins: origin,
         destinations: destination,
         travelMode: 'DRIVING',
     },
@@ -111,65 +57,77 @@ function getDurations2(origin, destination) {
     });
     return d.promise();
 }
-function find() {
-    getDurations2(originNode, nodes)
+function findDurations() {
+    getDurations(nodes, nodes)
         .done(function (response) {
+            //adresses = response.originAdresses;
             var origins = response.originAddresses;
-            var destinations = response.destinationAddresses;
-            var outputDiv = document.getElementById('outputDiv');
-            routeAdress.push(origins[0]);
-            var temp = 0;
-            var shortestIndex = 0;
-            var results = response.rows[0].elements;
-            for (var j = 0; j < results.length; j++) {
-                var split = results[j].duration.text.split(" ");
-                if (temp == 0) {
-                    temp = split[0];
-                    shortestIndex = j;
-                } else if (temp > split[0]) {
-                    temp = split[0];
-                    shortestIndex = j;
+            for (var i = 0; i < origins.length; i++) {
+                if (origins[i] != undefined)
+                    adresses[i] = origins[i];
+            }
+            var nodeDistanceData;
+            for (originNodeIndex in response.rows) {
+                nodeDistanceData = response.rows[originNodeIndex].elements;
+                durations[originNodeIndex] = [];
+                for (destinationNodeIndex in nodeDistanceData) {
+                    durations[originNodeIndex][destinationNodeIndex] = nodeDistanceData[destinationNodeIndex].duration.value;
                 }
-                
-               /* outputDiv.innerHTML += origins[0] + ' to ' + destinations[j]
-                            + ': ' + results[j].distance.text + ' in '
-                            + results[j].duration.text + '<br>';*/
             }
-            if (nodes.length > 1) {
-                route.push(nodes[shortestIndex]);
-                originNode = nodes[shortestIndex];
-                nodes.splice(shortestIndex, 1);
-            } else {
-                route.push(nodes[0]);
-                routeAdress.push(destinations[0]);
-            }
+            gg();
         })
     .fail(function (status) {
-        output3.innerHTML = "Ivyko klaida gaunan informacija is google maps";
+        output3.innerHTML = "Ivyko klaida gaunant informacija is google maps";
     })
 }
+//Apskaiciuoja pateikto marsruto ilgi pagal eiles tvarka
+function calcDistance(points) {
+    var sum = 0;
+    var prev = 0;
+    //console.log(points);
+    points.splice(0, 1);
+    for (var i = 0; i < points.length; i++) {
+        var d = durations[prev][points[i]];
+        //console.log(points[i], d);
+        prev = points[i];
+        sum += d;
+    }
+    //console.log(sum);
+    return sum;
+}
+//Randa trumpiausia is sugeneruotu marsrutu    
+function findShortest(perm) {
+    bestDuration = Infinity;
+    var d;
+    for (var i = 0; i < perm.length; i++) {
+        d = calcDistance(perm[i]);
+        if (d < bestDuration) {
+            bestDuration = d;
+            bestRoute = perm[i];
+        }
+    }
+}
+
 function printRoute() {
-    outputDiv.textContent = "";
-    output2.textContent = "";
-    for (var i = 0; i < routeAdress.length; i++)
-        output2.innerHTML += routeAdress[i] + '<br>';
+    outputDiv.innerHTML += adresses[0] + '<br>';
+    for (var i = 0; i < bestRoute.length; i++) {
+        outputDiv.innerHTML += adresses[bestRoute[i]] + '<br>';
+    }
 }
 //Ekrane isspausdina
 function showRoute() {
     outputDiv.textContent = "";
     output2.textContent = "";
-    var howMany = nodes.length - 1;
-    var t = 200;
-    for (var i = 0; i < howMany; i++) {
-        if (i > 0)
-            setTimeout(function () {
-                find();
-            },t);
-        else find();
-        t += 200;
-    }
-    for (var i = 0; i < routeAdress.length; i++)
-        outputDiv.innerHTML += routeAdress[i] + '<br>';
+    findDurations();  
+}
+function gg() {
+    var perm;
+    var ind = Array.from(Array(nodes.length).keys());
+    perm = generateCityRoutes(ind);
+    t = true;
+    findShortest(perm);
+    printRoute();
+    poly();
 }
 // Panaikina zymeklius ir kelius
 function clearMapMarkers() {
@@ -184,7 +142,7 @@ function clearMapMarkers() {
 }
 // Panaikina marsrutus, jei rodomi
 function clearDirections() {
-    // If there are directions being shown, clear them
+    // Jeigu rodomas marsrutas, jį panaikina
     if (directionsDisplay != null) {
         directionsDisplay.setMap(null);
         directionsDisplay = null;
@@ -197,10 +155,73 @@ function clearMap() {
     outputDiv.textContent = "";
     output2.textContent = "";
     output3.textContent = "";
-    originNode = null;
     route = [];
-    routeAdress = [];
     $('#destinations-count').html('0');
+}
+//Generuoja galimus aibes isdestymo variantus
+function generatePermutations(Arr) {
+    var permutations = [];
+    var A = Arr.slice();
+
+    function swap(a, b) {
+        var tmp = A[a];
+        A[a] = A[b];
+        A[b] = tmp;
+    }
+
+    function generate(n, A) {
+        if (n == 1) {
+            permutations.push(A.slice());
+        } else {
+            for (var i = 0; i <= n - 1; i++) {
+                generate(n - 1, A);
+                swap(n % 2 === 0 ? i : 0, n - 1);
+            }
+        }
+    }
+    generate(A.length, A);
+    return permutations;
+}
+//Generuoja visus marsrutus, kuriuos galima sudaryti is aibes
+function generateCityRoutes(cities) {
+    var pems = generatePermutations(cities.slice(1));
+    for (var i = 0; i < pems.length; i++) {
+        pems[i].unshift(cities[0]);
+        pems[i].push(cities[0]);
+    }
+    return pems;
+}
+//sukuria linijas marsrutui atvaizduoti
+function poly() {
+    var routeCoordinates = [];
+    routeCoordinates[0] = nodes[0];
+    for (var i = 0; i < bestRoute.length; i++) {
+        routeCoordinates = nodes[bestRoute[i]];
+    }  
+    directionsService = new google.maps.DirectionsService();
+    directionsDisplay = new google.maps.DirectionsRenderer();
+    directionsDisplay.setMap(map);
+    var waypts = [];
+    for (var i = 0; i < bestRoute.length-1; i++) {
+        waypts.push({
+            location: nodes[bestRoute[i]],
+            stopover: true
+        });
+    }
+    console.log(waypts.length);
+    // Pridedamas marsrutas i zemelapi
+    var request = {
+        origin: nodes[0],
+        destination: nodes[0],
+        waypoints: waypts,
+        travelMode: 'DRIVING',
+    };
+    directionsService.route(request, function(response, status) {
+        if (status == google.maps.DirectionsStatus.OK) {
+            directionsDisplay.setDirections(response);
+        }
+        clearMapMarkers();
+    });
 }
 google.maps.event.addDomListener(window, 'load', initializeMap);
 
