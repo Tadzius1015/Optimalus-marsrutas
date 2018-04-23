@@ -1,0 +1,39 @@
+﻿body
+{
+}
+.Container02 {
+    margin-left: 60px;
+}
+.Container01 {
+    margin-left: 60px;
+}
+video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    background: transparent;
+}
+.text1 {
+    color: white;
+    font-size: 50px;
+}
+
+.text2 {
+    color: white;
+    font-size: 30px;
+}
+
+.text3 {
+    color: white;
+    font-size: 30px;
+}
+
+.text4 {
+    color: white;
+    font-size: 30px;
+}
