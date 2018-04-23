@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" href="file:///C:/Users/Deividas/Desktop/Optimalus-masrutas/CSS/pradinis.css" />
+    <link rel="stylesheet" href="file:///C:/Users/Deividas/Desktop/Optimalus-masrutas/CSS/DesignApieMus.css" />
+    <link rel="stylesheet" href="file:///C:/Users/Deividas/Desktop/Optimalus-marsrutas-master/webpage/css/DesignInstrukcija.css" />
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div class="MainContainer">
+        <header>
+            <div class="Header">
+                <img class="Logo" src="file:///C:/Users/Deividas/Desktop/Optimalus-masrutas/logomap.svg" />
+                <a class="Header-Name">
+                    Welcome!
+                </a>
+            </div>
+        </header>
+        <div class="NavigationBar">
+            <ul class="Navigation">
+                <li class="tabbed" role="tab" aria-controls="Main">
+                    <a href="javascript: toggleChildren('Main');" class="a_top_hypers"> Main</a>
+                </li>
+                <li class="tabbed" role="tab" aria-controls="Map">
+                    <a href="javascript: toggleChildren('Map');" class="a_top_hypers"> Map</a>
+                </li>
+                <li class="tabbed" role="tab" aria-controls="AboutUs">
+                    <a href="javascript: toggleChildren('AboutUs');" class="a_top_hypers"> About Us</a>
+                </li>
+                <li class="tabbed" role="tab" aria-controls="Instruction">
+                    <a href="javascript: toggleChildren('Instruction');" class="a_top_hypers"> Instruction</a>
+                </li>
+            </ul>
+            
+        </div>
+        <div role="tabpanel" class="tab" id="Main">
+            <div class="Container01">
+
+            </div>
+        </div>
+        <div role="tabpanel" class="tab" id="Map">
+            <div id="map"></div>
+        </div>
+        <div role="tabpanel" class="tab" id="AboutUs">
+            <div class="Conatainer03">
+                <div Container0301">
+                    <a class="text">Projekto komanda</a>
+                </div>
+                <div class="apiemus">
+                    <div class="row">
+                        <div class="column">
+                            <h2>Tadas Meškauskas</h2>
+                            <p>Pareigos: komandos vadovas, programuotojas-dizaineris</p>
+                            <p>Kontaktai: tadas.meskauskas@ktu.edu</p>
+                            <img class="personalfotos" src="file:///C:/Users/Deividas/Desktop/Optimalus-marsrutas-master/webpage/images/tadas.jpg" />
+                        </div>
+                        <div class="column">
+                            <h2>Deividas Patalauskas</h2>
+                            <p>Pareigos: programuotojas-dizaineris</p>
+                            <p>Kontaktai: deividas.patalauskas@ktu.edu</p>
+                            <img class="personalfotos" src="file:///C:/Users/Deividas/Desktop/Optimalus-marsrutas-master/webpage/images/deividas.jpg" />
+                        </div>
+                        <div class="column">
+                            <h2>Remigijus Žebrauskas</h2>
+                            <p>Pareigos: analitikas-programuotojas</p>
+                            <p>Kontaktai: remigijus.zebrauskas@ktu.edu</p>
+                            <img class="personalfotos" src="file:///C:/Users/Deividas/Desktop/Optimalus-marsrutas-master/webpage/images/remigijus.jpg" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab" id="Instruction">
+            <div class="Container04">
+                <div class="Container0401">
+                    <h2>Naudojimo instrukcija</h2>
+                    <div class="naudojima">
+                        <P>1. Pažymėti adresus žemėlapyje arba juos įvesti laukelyje.</P>
+                        <p>2. Spausti Rasti.</p>
+                        <p>3. Programa pateiks geriausią variantą mašruto.</p>
+                        <p>4. Išvalyti mygtukas išvalo pažymėtus ar įvestus adresus.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <footer id="page-footer" class="Page-Footer">
+        <div class="Foot-Container">
+            <div class="Foot01">
+                <a class="CopyRight">Armatūra copyright © 2018</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleChildren(id) {
+            var x = document.getElementById('Map');
+            x.style.display = "none";
+            x = document.getElementById('Main');
+            x.style.display = "none";
+            x = document.getElementById('AboutUs');
+            x.style.display = "none";
+            x = document.getElementById('Instruction');
+            x.style.display = "none";
+
+            var elem = document.getElementById(id);
+            if (elem.id == "Main") {
+                if (elem.style.display == "none") {
+                    elem.style.display = "block";
+                }
+
+            }
+            if (elem.id == "Map") {
+                if (elem.style.display == "none") {
+                    elem.style.display = "block";
+                }
+
+            }
+            if (elem.id == "AboutUs") {
+                if (elem.style.display == "none") {
+                    elem.style.display = "block";
+                }
+
+            }
+            if (elem.id == "Instruction") {
+                if (elem.style.display == "none") {
+                    elem.style.display = "block";
+                }
+
+            }
+        }
+        function initMap() {
+            var uluru = { lat: 54.902434, lng: 23.940171 };
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 15,
+                center: uluru
+            });
+        }
+    </script>
+
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5BAqtLqrAtsuq0Ya3FPJ2qGXmrLiSgvY&callback=initMap">
+    </script>
+</body>
+</html>
