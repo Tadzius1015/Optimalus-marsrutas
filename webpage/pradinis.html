@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="C:\Users\Tadas\Desktop\pradiniss.css" />
     <link rel="stylesheet" href="C:\Users\Tadas\Desktop\DesignApieMus.css" />
     <link rel="stylesheet" href="C:\Users\Tadas\Desktop\DesignInstrukcija.css" />
+    <script src="C:\Users\Tadas\Desktop\projektas\Optimalus-marsrutas\webpage\js\pradinis.js"></script>
     <meta charset="utf-8" />
     <title></title>
 </head>
@@ -18,6 +19,7 @@
                 </a>
             </div>
         </header>
+    </div>
         <div class="NavigationBar">
             <ul class="Navigation">
                 <li class="tabbed" role="tab" aria-controls="Main">
@@ -32,8 +34,8 @@
                 <li class="tabbed" role="tab" aria-controls="Instruction">
                     <a href="javascript: toggleChildren('Instruction');" class="a_top_hypers"> Instruction</a>
                 </li>
-                <li class="tabbed" role="tab" aria-controls="Lietuviškai">
-                    <a href="javascript: toggleChildren('Lietuviškai');" class="a_top_hypers" onclick="window.location.href='http://www.google.lt'"> Lietuviškai</a>
+                <li class="tabbed1" role="tab" aria-controls="Lietuviškai" >
+                    <a href="javascript: toggleChildren('Lietuviškai');" class="a_top_hypers" onclick="window.location.href='file:///C:/Users/Tadas/Desktop/projektas/Optimalus-marsrutas/webpage/pradinislt.html'"> Lietuviškai</a>
                 </li>
             </ul>
 
@@ -49,26 +51,26 @@
         <div role="tabpanel" class="tab" id="AboutUs">
             <div class="Conatainer03">
                 <div Container0301">
-                    <a class="text">Projekto komanda</a>
+                    <a class="text">Project Team</a>
                 </div>
                 <div class="apiemus">
                     <div class="row">
                         <div class="column">
                             <h2>Tadas Meškauskas</h2>
-                            <p>Pareigos: komandos vadovas, programuotojas-dizaineris</p>
-                            <p>Kontaktai: tadas.meskauskas@ktu.edu</p>
+                            <p>Position: head manager, programmer-designer(front-end)</p>
+                            <p>Contacts: tadas.meskauskas@ktu.edu</p>
                             <img class="personalfotos" src="file:///C:/Users/Deividas/Desktop/Optimalus-marsrutas-master/webpage/images/tadas.jpg" />
                         </div>
                         <div class="column">
                             <h2>Deividas Patalauskas</h2>
-                            <p>Pareigos: programuotojas-dizaineris</p>
-                            <p>Kontaktai: deividas.patalauskas@ktu.edu</p>
+                            <p>Position: programmer-designer(front-end)</p>
+                            <p>Contacts: deividas.patalauskas@ktu.edu</p>
                             <img class="personalfotos" src="file:///C:/Users/Deividas/Desktop/Optimalus-marsrutas-master/webpage/images/deividas.jpg" />
                         </div>
                         <div class="column">
                             <h2>Remigijus Žebrauskas</h2>
-                            <p>Pareigos: analitikas-programuotojas</p>
-                            <p>Kontaktai: remigijus.zebrauskas@ktu.edu</p>
+                            <p>Position: programmer(back-end)</p>
+                            <p>Contacts: remigijus.zebrauskas@ktu.edu</p>
                             <img class="personalfotos" src="file:///C:/Users/Deividas/Desktop/Optimalus-marsrutas-master/webpage/images/remigijus.jpg" />
                         </div>
                     </div>
@@ -78,12 +80,12 @@
         <div role="tabpanel" class="tab" id="Instruction">
             <div class="Container04">
                 <div class="Container0401">
-                    <h2>Naudojimo instrukcija</h2>
+                    <h2>Manual</h2>
                     <div class="naudojima">
-                        <P>1. Pažymėti adresus žemėlapyje arba juos įvesti laukelyje.</P>
-                        <p>2. Spausti Rasti.</p>
-                        <p>3. Programa pateiks geriausią variantą mašruto.</p>
-                        <p>4. Išvalyti mygtukas išvalo pažymėtus ar įvestus adresus.</p>
+                        <P>1. Mark adresses in map or write it in field </P>
+                        <p>2. Press find</p>
+                        <p>3. Then program gives best possible route</p>
+                        <p>4. When you want to repeat, press button clean and then all adresses will be cleaned</p>
                     </div>
                 </div>
             </div>
@@ -94,51 +96,10 @@
             <div class="Foot-Container">
                 <div class="Foot01">
                     <a class="CopyRight">Armatūra copyright © 2018</a>
+                    <img class="applogo" src="C:\Users\Tadas\Desktop\download.png" width="300px" height="75px" />
                 </div>
             </div>
         </footer>
-        <script>
-        function toggleChildren(id) {
-            var x = document.getElementById('Map');
-            x.style.display = "none";
-            x = document.getElementById('Main');
-            x.style.display = "none";
-            x = document.getElementById('AboutUs');
-            x.style.display = "none";
-            x = document.getElementById('Instruction');
-            x.style.display = "none";
-            x = document.getElementById('Lietuviškai');
-            x.style.display = "none";
-            var elem = document.getElementById(id);
-            if (elem.id == "Main") {
-                if (elem.style.display == "none") {
-                    elem.style.display = "block";
-                }
-            }
-            if (elem.id == "Map") {
-                if (elem.style.display == "none") {
-                    elem.style.display = "block";
-                }
-            }
-            if (elem.id == "AboutUs") {
-                if (elem.style.display == "none") {
-                    elem.style.display = "block";
-                }
-            }
-            if (elem.id == "Instruction") {
-                if (elem.style.display == "none") {
-                    elem.style.display = "block";
-                }
-            }
-        }
-        function initMap() {
-            var uluru = { lat: 54.902434, lng: 23.940171 };
-            var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 15,
-                center: uluru
-            });
-        }
-        </script>
         <script async defer
                 src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5BAqtLqrAtsuq0Ya3FPJ2qGXmrLiSgvY&callback=initMap">
         </script>
