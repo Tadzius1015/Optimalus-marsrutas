@@ -2,10 +2,12 @@
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <link rel="stylesheet" href="C:\Users\Tadas\Desktop\pradiniss.css" />
-    <link rel="stylesheet" href="C:\Users\Tadas\Desktop\DesignApieMus.css" />
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyAlp3b8_E2--5HWmSBRYLPohpZHEbUBjSM"></script>
+    <link rel="stylesheet" href="C:\Users\Tadas\Desktop\projektas\Optimalus-marsrutas\webpage\css\pradinis.css" />
+    <link rel="stylesheet" href="C:\Users\Tadas\Desktop\projektas\Optimalus-marsrutas\webpage\css\DesignApieMus.css" />
     <link rel="stylesheet" href="C:\Users\Tadas\Desktop\DesignInstrukcija.css" />
     <script src="C:\Users\Tadas\Desktop\projektas\Optimalus-marsrutas\webpage\js\pradinis.js"></script>
+    <script src="C:\Users\Tadas\Desktop\projektas\Optimalus-marsrutas\webpage\js\mapscript.js"></script>
     <meta charset="utf-8" />
     <title></title>
 </head>
@@ -42,11 +44,35 @@
         </div>
         <div role="tabpanel" class="tab" id="Main">
             <div class="Container01">
-
+                <video autoplay="true" loop muted>
+                    <source src="C:\Users\Tadas\Downloads\video.mp4" />
+                    <div class="text-container">
+                        <p class="text1">Sveiki atvykę į mūsų puslapį :)</p>
+                        <p class="text2">Mes viliamės, kad rasite tai, ko jums reikia.</p>
+                        <p class="text3">Prieš naudodami patariame jums paskaityti vartotojo instrukciją, kurioje yra visos funkcijos.</p>
+                        <p class="text4">P.S. projektas yra kūrimo stadijoje, todėl nenustebkite, jog puslapis ar kai kurios funkcijos gali laikinai neveikti.</p>
+                    </div>
+                </video>
             </div>
         </div>
         <div role="tabpanel" class="tab" id="Map">
-            <div id="map"></div>
+            <div>
+                <div id="map-canvas" style="width:660px; height:560px;"></div>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Norimu aplankyti vietu skaicius: </td>
+                            <td id="destinations-count">0</td>
+                        </tr>
+                        <tr id="ga-buttons">
+                            <td colspan="2"><button onclick="showRoute()">Rasti maršrutą</button> <button class="btn" onclick="clearMap()">Išvalyti žemėlapį</button></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div id="outputDiv"></div>
+            <div id="output2"> </div>
+            <div id="output3"> </div>
         </div>
         <div role="tabpanel" class="tab" id="AboutUs">
             <div class="Conatainer03">
