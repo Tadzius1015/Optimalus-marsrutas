@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="C:\Users\Tadas\Desktop\pradiniss.css" />
     <link rel="stylesheet" href="C:\Users\Tadas\Desktop\DesignApieMus.css" />
     <link rel="stylesheet" href="C:\Users\Tadas\Desktop\DesignInstrukcija.css" />
+    <script src="C:\Users\Tadas\Desktop\projektas\Optimalus-marsrutas\webpage\js\pradinis.js"></script>
     <meta charset="utf-8" />
     <title></title>
 </head>
@@ -95,49 +96,10 @@
             <div class="Foot-Container">
                 <div class="Foot01">
                     <a class="CopyRight">Armatūra copyright © 2018</a>
+                    <img class="applogo" src="C:\Users\Tadas\Desktop\download.png" width="300px" height="75px" />
                 </div>
             </div>
         </footer>
-        <script>
-        function toggleChildren(id) {
-            var x = document.getElementById('Map');
-            x.style.display = "none";
-            x = document.getElementById('Main');
-            x.style.display = "none";
-            x = document.getElementById('AboutUs');
-            x.style.display = "none";
-            x = document.getElementById('Instruction');
-            x.style.display = "none";
-            var elem = document.getElementById(id);
-            if (elem.id == "Main") {
-                if (elem.style.display == "none") {
-                    elem.style.display = "block";
-                }
-            }
-            if (elem.id == "Map") {
-                if (elem.style.display == "none") {
-                    elem.style.display = "block";
-                }
-            }
-            if (elem.id == "AboutUs") {
-                if (elem.style.display == "none") {
-                    elem.style.display = "block";
-                }
-            }
-            if (elem.id == "Instruction") {
-                if (elem.style.display == "none") {
-                    elem.style.display = "block";
-                }
-            }
-        }
-        function initMap() {
-            var uluru = { lat: 54.902434, lng: 23.940171 };
-            var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 15,
-                center: uluru
-            });
-        }
-        </script>
         <script async defer
                 src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5BAqtLqrAtsuq0Ya3FPJ2qGXmrLiSgvY&callback=initMap">
         </script>
