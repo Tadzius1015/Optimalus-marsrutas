@@ -6,14 +6,15 @@ Yra:
 - Veikiantis žemėlapis,
 - Maršruto atvaizdavimas žemėlapyje,
 - "Brute force" algoritmas,
-- Paieška grįžtant į pradžią.
+- Paieška grįžtant į pradžią,
+- Genetinis algoritmas,
+- Ekrane spausdinamas kelionės atstumas bei apytikslis laiko įvertis.
 
 Dirbama:
-- Genetinis algoritmas.
+- Mygtukas, kurį paspaudus nustatoma vartotojo dabartinė vieta.
 
  
 Planuojama padaryti:
-- Mygtukas, kurį paspaudus nustatoma vartotojo dabartinė vieta,
-- Ekrane spausdinamas kelionės atstumas bei apytikslis laiko įvertis,
 - Sutvarkyti tikslų numeraciją (nerodomas pirmas),
-- Paieška nuo taško A iki B.
+- Paieška nuo taško A iki B,
+- Genetinio algoritmo optimizacija.
