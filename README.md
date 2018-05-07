@@ -8,13 +8,12 @@ Yra:
 - "Brute force" algoritmas,
 - Paieška grįžtant į pradžią,
 - Genetinis algoritmas,
-- Ekrane spausdinamas kelionės atstumas bei apytikslis laiko įvertis.
-
-Dirbama:
+- Ekrane spausdinamas kelionės atstumas bei apytikslis laiko įvertis,
 - Mygtukas, kurį paspaudus nustatoma vartotojo dabartinė vieta.
 
+Dirbama:
+- Paieška nuo taško A iki B,
  
 Planuojama padaryti:
 - Sutvarkyti tikslų numeraciją (nerodomas pirmas),
-- Paieška nuo taško A iki B,
 - Genetinio algoritmo optimizacija.
