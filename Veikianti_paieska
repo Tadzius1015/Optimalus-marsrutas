@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyAlp3b8_E2--5HWmSBRYLPohpZHEbUBjSM"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyA5BAqtLqrAtsuq0Ya3FPJ2qGXmrLiSgvY"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 var map;
@@ -9,13 +9,15 @@ var fin;
 var nodes = [];
 var markers = [];
 var durations = [];
+var distances = [];
 var bestDuration;
 var bestRoute = [];
 var adresses = [];
 var directionsDisplay = null;
 var directionsService;
 var polylinePath;
-var prevNodes = [];
+var myLocation = false;
+var travelType = null;
 
 // Sukuriam google maps zemelapi
 function initializeMap() {
@@ -39,6 +41,42 @@ function initializeMap() {
         // Padidina keliones tikslu kieki
         $('#destinations-count').html(nodes.length);
     });
+    // Prideda mygtuka kuris i marsruta itraukia dabartine vartotojo vieta
+    var myLocationDiv = document.createElement('div');
+    new getMyLocation(myLocationDiv, map);
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(myLocationDiv);
+
+    function getMyLocation(myLocationDiv, map) {
+        var myLocationBtn = document.createElement('button');
+        myLocationBtn.innerHTML = 'Mano buvimo vieta';
+        myLocationBtn.className = 'large-btn';
+        myLocationBtn.style.margin = '5px';
+        myLocationBtn.style.opacity = '0.95';
+        myLocationBtn.style.borderRadius = '3px';
+        myLocationDiv.appendChild(myLocationBtn);
+
+        google.maps.event.addDomListener(myLocationBtn, 'click', function () {
+            navigator.geolocation.getCurrentPosition(function (success) {
+                if(!myLocation){
+                    var pos = {
+                        lat: success.coords.latitude,
+                        lng: success.coords.longitude
+                    };
+                    nodes.push(pos);
+                    $('#destinations-count').html(nodes.length);
+                    // Prideda tiksla i zemelapi
+                    marker = new google.maps.Marker({ position: pos, map: map });
+                    markers.push(marker);
+                    map.setCenter(new google.maps.LatLng(pos.lat, pos.lng));
+                    map.setZoom(13);
+                    myLocation = true;
+                }
+                else {
+                    window.alert("Buvimo vieta jau pažymėta!");
+                }
+            });
+        });
+    }
 }
 // Gauna keliones laikus ir atstumus tarp tikslu
 function getDurations(origin, destination) {
@@ -61,7 +99,6 @@ function getDurations(origin, destination) {
 function findDurations() {
     getDurations(nodes, nodes)
         .done(function (response) {
-            //adresses = response.originAdresses;
             var origins = response.originAddresses;
             for (var i = 0; i < origins.length; i++) {
                 if (origins[i] != undefined)
@@ -71,18 +108,34 @@ function findDurations() {
             for (originNodeIndex in response.rows) {
                 nodeDistanceData = response.rows[originNodeIndex].elements;
                 durations[originNodeIndex] = [];
+                distances[originNodeIndex] = [];
                 for (destinationNodeIndex in nodeDistanceData) {
                     durations[originNodeIndex][destinationNodeIndex] = nodeDistanceData[destinationNodeIndex].duration.value;
+                    distances[originNodeIndex][destinationNodeIndex] = nodeDistanceData[destinationNodeIndex].distance.value;
                 }
             }
             gg();
         })
     .fail(function (status) {
-        output3.innerHTML = "Ivyko klaida gaunant informacija is google maps";
+        output3.innerHTML = "Ivyko klaida gaunant informacija is google maps ";
     })
 }
+
 //Apskaiciuoja pateikto marsruto ilgi pagal eiles tvarka
 function calcDistance(points) {
+    var sum = 0;
+    var prev = 0;
+    points.splice(0, 1);
+    for (var i = 0; i < points.length; i++) {
+        var d = distances[prev][points[i]];
+        prev = points[i];
+        sum += d;
+    }
+    points.unshift(0);
+    return sum;
+}
+//Apskaiciuoja pateikto marsruto laika pagal eiles tvarka
+function calcDuration(points) {
     var sum = 0;
     var prev = 0;
     points.splice(0, 1);
@@ -99,35 +152,39 @@ function findShortest(perm) {
     bestDuration = Infinity;
     var d;
     for (var i = 0; i < perm.length; i++) {
-        d = calcDistance(perm[i]);
+        d = calcDuration(perm[i]);
         if (d < bestDuration) {
             bestDuration = d;
             bestRoute = perm[i];
         }
     }
+    return bestRoute;
 }
 
-function printRoute() {
+function printRoute(best) {
     outputDiv.innerHTML += adresses[0] + '<br>';
-    for (var i = 0; i < bestRoute.length; i++) {
-        outputDiv.innerHTML += adresses[bestRoute[i]] + '<br>';
+    for (var i = 1; i < best.length; i++) {
+        outputDiv.innerHTML += adresses[best[i]] + '<br>';
     }
 }
 //Ekrane isspausdina
 function showRoute() {
     outputDiv.textContent = "";
-    output2.textContent = "";
+
+    travelType = $('#travel-type').val();
     findDurations();  
 }
+    
 function gg() {
-    if (nodes.length < 10) {
+    if (nodes.length < 8) {
         var perm;
         var ind = Array.from(Array(nodes.length).keys());
+        console.log(travelType);
         perm = generateCityRoutes(ind);
         t = true;
-        findShortest(perm);
-        printRoute();
-        poly();
+        var best = findShortest(perm);
+        printRoute(best);
+        poly(best);
     }
     else {
         if (directionsDisplay != null) {
@@ -135,19 +192,29 @@ function gg() {
             directionsDisplay = null;
         }
 
-            var pop = new ga.population();
-            pop.initialize(nodes.length);
-            var route = pop.getFittest().chromosome;
-            ga.evolvePopulation(pop, function (update) {
+        var pop = new ga.population();
+        pop.initialize(nodes.length);
+        var best = pop.getFittest().chromosome.slice();
+        ga.evolvePopulation(pop, function (update) {
 
-                var route = update.population.getFittest().chromosome;
-                var routeCoordinates = [];
-                for (index in route) {
-                    routeCoordinates[index] = nodes[route[index]];
-                }
-            });
-        }
+            var route = update.population.getFittest().chromosome;
+            for (var i = 0; i < route.length; i++) {
+                best[i] = route[i];
+            }
+        });
+        printRoute(best);
+        poly(best);
+    }
+    bestDuration = calcDuration(best);
+    bestDistance = calcDistance(best);
+    //console.log("Apytikslis keliones laikas: " + ((bestDuration / 60)+((bestDuration%60)/100*60)) + " min");
+    //console.log("Apytikslis keliones atstumas: " + (bestDistance / 1000).toFixed(1) + " km");
+    var temp = bestDuration / 60;
+    outputDiv.innerHTML += "" + '<br>';
+    outputDiv.innerHTML += "Apytikslis keliones laikas: " + Math.floor(temp) + " min "+ ((temp.toFixed(2)-Math.floor(temp))*60).toFixed(0) + " s" + '<br>';
+    outputDiv.innerHTML += "Apytikslis keliones atstumas: " + (bestDistance / 1000).toFixed(1) + " km" + '<br>';
 }
+
 // Panaikina zymeklius ir kelius
 function clearMapMarkers() {
     for (index in markers) {
@@ -172,9 +239,12 @@ function clearMap() {
     clearMapMarkers();
     clearDirections();
     outputDiv.textContent = "";
-    output2.textContent = "";
     output3.textContent = "";
     route = [];
+    bestDuration = Infinity;
+    bestRoute = [];
+    adresses = [];
+    myLocation = false;
     $('#destinations-count').html('0');
 }
 //Generuoja galimus aibes isdestymo variantus
@@ -203,45 +273,72 @@ function generatePermutations(Arr) {
 }
 //Generuoja visus marsrutus, kuriuos galima sudaryti is aibes
 function generateCityRoutes(cities) {
-    var pems = generatePermutations(cities.slice(1));
+    var pems = null;
+    if (travelType == "GR")
+        pems = generatePermutations(cities.slice(1));
+    else if (travelType == "NGR")
+        pems = generatePermutations(cities.slice(1,cities.length-1));
     for (var i = 0; i < pems.length; i++) {
         pems[i].unshift(cities[0]);
-        pems[i].push(cities[0]);
+        if (travelType == "GR") {          
+            pems[i].push(cities[0]);
+        }
+        else if (travelType == "NGR") {
+            pems[i].push(cities[cities.length]);
+        }
     }
     return pems;
 }
 
 //sukuria linijas marsrutui atvaizduoti
-function poly() {
-    var routeCoordinates = [];
-    routeCoordinates[0] = nodes[0];
-    for (var i = 0; i < bestRoute.length; i++) {
-        routeCoordinates = nodes[bestRoute[i]];
-    }  
+function poly(best) {
     directionsService = new google.maps.DirectionsService();
     directionsDisplay = new google.maps.DirectionsRenderer();
     directionsDisplay.setMap(map);
     var waypts = [];
-    for (var i = 0; i < bestRoute.length-1; i++) {
-        waypts.push({
-            location: nodes[bestRoute[i]],
-            stopover: true
+    if (travelType == "GR") {
+        for (var i = 0; i < best.length - 1; i++) {
+            waypts.push({
+                location: nodes[best[i]],
+                stopover: true
+            });
+        }
+        // Pridedamas marsrutas i zemelapi
+        var request = {
+            origin: nodes[0],
+            destination: nodes[0],
+            waypoints: waypts,
+            travelMode: 'DRIVING',
+        };
+        directionsService.route(request, function (response, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+                directionsDisplay.setDirections(response);
+            }
+            clearMapMarkers();
         });
     }
-    console.log(waypts.length);
-    // Pridedamas marsrutas i zemelapi
-    var request = {
-        origin: nodes[0],
-        destination: nodes[0],
-        waypoints: waypts,
-        travelMode: 'DRIVING',
-    };
-    directionsService.route(request, function(response, status) {
-        if (status == google.maps.DirectionsStatus.OK) {
-            directionsDisplay.setDirections(response);
+    else if (travelType == "NGR") {
+        for (var i = 0; i < best.length; i++) {
+            waypts.push({
+                location: nodes[best[i]],
+                stopover: true
+            });
         }
-        clearMapMarkers();
-    });
+        // Pridedamas marsrutas i zemelapi
+        var request = {
+            origin: nodes[0],
+            destination: nodes[nodes.length],
+            waypoints: waypts,
+            travelMode: 'DRIVING',
+        };
+        directionsService.route(request, function (response, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+                directionsDisplay.setDirections(response);
+            }
+            clearMapMarkers();
+        });
+    }
+    
 }
 google.maps.event.addDomListener(window, 'load', initializeMap);
 
@@ -250,10 +347,10 @@ var ga = {
     // algoritmo konstantos
     "crossoverRate": 0.5,
     "mutationRate": 0.1,
-    "populationSize": 10,
+    "populationSize": 50,
     "tournamentSize": 5,
     "elitism": true,
-    "maxGenerations": 50,
+    "maxGenerations": 100,
     "tickerSpeed": 60,
 
     // Evoliucionuoja populiacija
@@ -326,7 +423,7 @@ var ga = {
                     // Parenka su kuo maisys
                     var parent = this.tournamentSelection();
                     // Ir pritaiko kryzminima
-                    //this.individuals[index].crossover(parent, newPopulation);
+                    this.individuals[index].crossover(parent, newPopulation);
                 }
             }
 
@@ -338,13 +435,12 @@ var ga = {
         };
         // Isrenka individa naudojant turnyro selekcija
         this.tournamentSelection = function () {
-            for (var i = 0; i < this.individuals.length; i++) {
+            for (var i = 0; i < this.individuals.length-1; i++) {
                 var randomIndex = Math.floor(Math.random() * this.individuals.length);
                 var tempIndividual = this.individuals[randomIndex];
                 this.individuals[randomIndex] = this.individuals[i];
                 this.individuals[i] = tempIndividual;
             }
-            console.log("tournament:");
             var tournamentPopulation = new ga.population();
             for (var i = 0; i < ga.tournamentSize; i++) {
 
@@ -362,7 +458,6 @@ var ga = {
                     fittestIndex = i;
                 }
             }
-            console.log(fittestIndex);
             return fittestIndex;
         };
         this.getFittest = function () {
@@ -415,20 +510,37 @@ var ga = {
             this.chromosome.push(0);
         };
 
+        // Grazina individo keliones trukme
+        this.getDistance = function () {
+            var totalDistance = 0;
+            for (index in this.chromosome) {
+                var startNode = this.chromosome[index];
+                var endNode = this.chromosome[0];
+                if ((parseInt(index) + 1) < this.chromosome.length) {
+                    endNode = this.chromosome[(parseInt(index) + 1)];
+                }
+                totalDistance += durations[startNode][endNode];
+            }
+
+            totalDistance += durations[startNode][endNode];
+
+            return totalDistance;
+        };
         // Apskaiciuojamas individo tinkamumas
         this.calcFitness = function () {
             if (this.fitness != null) {
                 return this.fitness;
             }
 
-            var totalDistance = calcDistance(this.chromosome);
+            var totalDistance = this.getDistance();
             this.fitness = 1 / totalDistance;
-            console.log(totalDistance);
             return this.fitness;
         };
         //Pritaiko kryzminima individui ir nurodytam partneriui ir rezultatus sudeda i nauja populiacija
         this.crossover = function (individual, offspringPopulation) {
             var offspringChromosome = [];
+            this.chromosome.splice(this.chromosomeLength - 1, 1);
+            this.chromosome.shift();
             // Atsitiktinai atrenkama ka prideti i nauja populiacija
             var startPos = Math.floor(this.chromosome.length * Math.random());
             var endPos = Math.floor(this.chromosome.length * Math.random());
@@ -440,6 +552,8 @@ var ga = {
                     i = 0;
                 }
             }
+            this.chromosome.unshift(0);
+            this.chromosome.push(0);
             // Pridedama likusi informacija 
             for (parentIndex in individual.chromosome) {
                 var node = individual.chromosome[parentIndex];
@@ -478,14 +592,22 @@ var ga = {
             <td>Norimu aplankyti vietu skaicius: </td>
             <td id="destinations-count">0</td>
         </tr>
-        <tr id="ga-buttons">
+        <tr>
+            <td>Kelionės tipas</td>
+            <td>
+                <select id="travel-type">
+                    <option value="GR">Grįžtama į pradžią</option>
+                    <option value="NGR">Važiojama į paskutinį pažymėtą</option>
+                </select>
+            </td>
+            </tr>
+        <tr>
             <td colspan="2"><button onclick="showRoute()">Rasti maršrutą</button> <button class="btn" onclick="clearMap()">Išvalyti žemėlapį</button></td>
         </tr>
     </table>
   </div>
 </div>
     <div id="outputDiv"></div>
-    <div id="output2"> </div>
     <div id="output3"> </div>
 </body>
 </html>
