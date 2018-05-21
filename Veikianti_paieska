@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyA5BAqtLqrAtsuq0Ya3FPJ2qGXmrLiSgvY"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5BAqtLqrAtsuq0Ya3FPJ2qGXmrLiSgvY&libraries=places">async defer></script>
 <script type="text/javascript">
 var map;
-var fin;
 var nodes = [];
 var markers = [];
 var durations = [];
@@ -19,13 +18,13 @@ var polylinePath;
 var myLocation = false;
 var travelType = null;
 
-// Sukuriam google maps zemelapi
+    // Sukuriam google maps zemelapi
 function initializeMap() {
     var opts = {
         center: new google.maps.LatLng(54.902434, 23.940171),
         zoom: 13,
         streetViewControl: false,
-        mapTypeControl: false,
+        mapTypeId: 'roadmap'
     };
    
     map = new google.maps.Map(document.getElementById('map-canvas'), opts);
@@ -41,6 +40,7 @@ function initializeMap() {
         // Padidina keliones tikslu kieki
         $('#destinations-count').html(nodes.length);
     });
+    
     // Prideda mygtuka kuris i marsruta itraukia dabartine vartotojo vieta
     var myLocationDiv = document.createElement('div');
     new getMyLocation(myLocationDiv, map);
@@ -78,6 +78,25 @@ function initializeMap() {
         });
     }
 }
+    // Pridedamas paieškos laukas
+function initAutocomplete() {
+
+    var input = document.getElementById('pac-input');
+    var searchBox = new google.maps.places.SearchBox(input);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+    searchBox.addListener('places_changed', function () {
+        var places = searchBox.getPlaces();
+        places.forEach(function (place) {
+            
+           marker = new google.maps.Marker({ position: place.geometry.location, map: map });
+            markers.push(marker);
+            nodes.push(place.geometry.location);
+            $('#destinations-count').html(nodes.length);        
+        });
+    });
+}
+
 // Gauna keliones laikus ir atstumus tarp tikslu
 function getDurations(origin, destination) {
     var service = new google.maps.DistanceMatrixService();
@@ -138,13 +157,14 @@ function calcDistance(points) {
 function calcDuration(points) {
     var sum = 0;
     var prev = 0;
-    points.splice(0, 1);
-    for (var i = 0; i < points.length; i++) {
+    //points.splice(0, 1);
+    for (var i = 1; i < points.length; i++) //!!!!!!!!!!!!!!!! i=0 buvo
+    {
         var d = durations[prev][points[i]];
         prev = points[i];
         sum += d;
     }
-    points.unshift(0);
+    //points.unshift(0);
     return sum;
 }
 //Randa trumpiausia is sugeneruotu marsrutu    
@@ -166,11 +186,11 @@ function printRoute(best) {
     for (var i = 1; i < best.length; i++) {
         outputDiv.innerHTML += adresses[best[i]] + '<br>';
     }
+    outputDiv.innerHTML += " " + '<br>';
 }
 //Ekrane isspausdina
 function showRoute() {
     outputDiv.textContent = "";
-
     travelType = $('#travel-type').val();
     findDurations();  
 }
@@ -179,7 +199,6 @@ function gg() {
     if (nodes.length < 8) {
         var perm;
         var ind = Array.from(Array(nodes.length).keys());
-        console.log(travelType);
         perm = generateCityRoutes(ind);
         t = true;
         var best = findShortest(perm);
@@ -193,399 +212,530 @@ function gg() {
         }
 
         var pop = new ga.population();
-        pop.initialize(nodes.length);
+        if (travelType == "GR")
+            pop.initialize(nodes.length - 1);
+        else if (travelType == "NGR")
+            pop.initialize(nodes.length - 2);
         var best = pop.getFittest().chromosome.slice();
         ga.evolvePopulation(pop, function (update) {
 
-            var route = update.population.getFittest().chromosome;
-            for (var i = 0; i < route.length; i++) {
-                best[i] = route[i];
+            }, function (result) {
+            // Get route
+            route = result.population.getFittest().chromosome;
+            if (travelType == "GR") {
+                route.unshift(0);
+                route.push(0);
             }
-        });
-        printRoute(best);
-        poly(best);
+            else if (travelType == "NGR") {
+                route.unshift(0);
+                route.push(nodes.length - 1);
+            }
+            // Add route to map
+            directionsService = new google.maps.DirectionsService();
+            directionsDisplay = new google.maps.DirectionsRenderer();
+            directionsDisplay.setMap(map);
+            var waypts = [];
+            for (var i = 1; i < route.length-1; i++) {
+                waypts.push({
+                    location: nodes[route[i]],
+                    stopover: true
+                });
+            }
+            var destination;
+            if (travelType == "GR") {
+                destination = nodes[route[0]];
+            }
+            else if (travelType == "NGR") {
+                destination = nodes[route[route.length-1]];
+            }
+            // Add final route to map
+            var request = {
+                origin: nodes[route[0]],
+                destination: destination,
+                waypoints: waypts,
+                travelMode: 'DRIVING',
+            };
+            directionsService.route(request, function (response, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay.setDirections(response);
+                }
+                clearMapMarkers();
+            });
+
+            });
     }
     bestDuration = calcDuration(best);
     bestDistance = calcDistance(best);
-    //console.log("Apytikslis keliones laikas: " + ((bestDuration / 60)+((bestDuration%60)/100*60)) + " min");
-    //console.log("Apytikslis keliones atstumas: " + (bestDistance / 1000).toFixed(1) + " km");
     var temp = bestDuration / 60;
     outputDiv.innerHTML += "" + '<br>';
     outputDiv.innerHTML += "Apytikslis keliones laikas: " + Math.floor(temp) + " min "+ ((temp.toFixed(2)-Math.floor(temp))*60).toFixed(0) + " s" + '<br>';
     outputDiv.innerHTML += "Apytikslis keliones atstumas: " + (bestDistance / 1000).toFixed(1) + " km" + '<br>';
-}
-
-// Panaikina zymeklius ir kelius
-function clearMapMarkers() {
-    for (index in markers) {
-        markers[index].setMap(null);
-    }
-    nodes = [];
-    if (polylinePath != undefined) {
-        polylinePath.setMap(null);
-    }
-    markers = [];
-}
-// Panaikina marsrutus, jei rodomi
-function clearDirections() {
-    // Jeigu rodomas marsrutas, jį panaikina
-    if (directionsDisplay != null) {
-        directionsDisplay.setMap(null);
-        directionsDisplay = null;
-    }
-}
-// Isvalo zemelapi
-function clearMap() {
-    clearMapMarkers();
-    clearDirections();
-    outputDiv.textContent = "";
-    output3.textContent = "";
-    route = [];
-    bestDuration = Infinity;
-    bestRoute = [];
-    adresses = [];
-    myLocation = false;
-    $('#destinations-count').html('0');
-}
-//Generuoja galimus aibes isdestymo variantus
-function generatePermutations(Arr) {
-    var permutations = [];
-    var A = Arr.slice();
-
-    function swap(a, b) {
-        var tmp = A[a];
-        A[a] = A[b];
-        A[b] = tmp;
     }
 
-    function generate(n, A) {
-        if (n == 1) {
-            permutations.push(A.slice());
-        } else {
-            for (var i = 0; i <= n - 1; i++) {
-                generate(n - 1, A);
-                swap(n % 2 === 0 ? i : 0, n - 1);
-            }
-        }
-    }
-    generate(A.length, A);
-    return permutations;
-}
-//Generuoja visus marsrutus, kuriuos galima sudaryti is aibes
-function generateCityRoutes(cities) {
-    var pems = null;
-    if (travelType == "GR")
-        pems = generatePermutations(cities.slice(1));
-    else if (travelType == "NGR")
-        pems = generatePermutations(cities.slice(1,cities.length-1));
-    for (var i = 0; i < pems.length; i++) {
-        pems[i].unshift(cities[0]);
-        if (travelType == "GR") {          
-            pems[i].push(cities[0]);
-        }
-        else if (travelType == "NGR") {
-            pems[i].push(cities[cities.length]);
-        }
-    }
-    return pems;
-}
-
-//sukuria linijas marsrutui atvaizduoti
-function poly(best) {
-    directionsService = new google.maps.DirectionsService();
-    directionsDisplay = new google.maps.DirectionsRenderer();
-    directionsDisplay.setMap(map);
-    var waypts = [];
-    if (travelType == "GR") {
-        for (var i = 0; i < best.length - 1; i++) {
-            waypts.push({
-                location: nodes[best[i]],
-                stopover: true
-            });
-        }
-        // Pridedamas marsrutas i zemelapi
-        var request = {
-            origin: nodes[0],
-            destination: nodes[0],
-            waypoints: waypts,
-            travelMode: 'DRIVING',
-        };
-        directionsService.route(request, function (response, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-                directionsDisplay.setDirections(response);
-            }
-            clearMapMarkers();
-        });
-    }
-    else if (travelType == "NGR") {
-        for (var i = 0; i < best.length; i++) {
-            waypts.push({
-                location: nodes[best[i]],
-                stopover: true
-            });
-        }
-        // Pridedamas marsrutas i zemelapi
-        var request = {
-            origin: nodes[0],
-            destination: nodes[nodes.length],
-            waypoints: waypts,
-            travelMode: 'DRIVING',
-        };
-        directionsService.route(request, function (response, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-                directionsDisplay.setDirections(response);
-            }
-            clearMapMarkers();
-        });
-    }
-    
-}
-google.maps.event.addDomListener(window, 'load', initializeMap);
-
-// Genetinio algoritmo kodas
-var ga = {
-    // algoritmo konstantos
-    "crossoverRate": 0.5,
-    "mutationRate": 0.1,
-    "populationSize": 50,
-    "tournamentSize": 5,
-    "elitism": true,
-    "maxGenerations": 100,
-    "tickerSpeed": 60,
-
-    // Evoliucionuoja populiacija
-    "evolvePopulation": function (population, generationCallBack, completeCallBack) {
-        var generation = 1;
-        var evolveInterval = setInterval(function () {
-            if (generationCallBack != undefined) {
-                generationCallBack({
-                    population: population,
-                    generation: generation,
+   
+    //sukuria linijas marsrutui atvaizduoti
+    function poly(best) {
+        directionsService = new google.maps.DirectionsService();
+        directionsDisplay = new google.maps.DirectionsRenderer();
+        directionsDisplay.setMap(map);
+        var waypts = [];
+        if (travelType == "GR") {
+            for (var i = 1; i < best.length-1; i++) {
+                waypts.push({
+                    location: nodes[best[i]],
+                    stopover: true
                 });
             }
-            population = population.crossover();
-            //population.mutate();
-            generation++;
+            // Pridedamas marsrutas i zemelapi
+            var request = {
+                origin: nodes[0],
+                destination: nodes[0],
+                waypoints: waypts,
+                travelMode: 'DRIVING',
+            };
+            directionsService.route(request, function (response, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay.setDirections(response);
+                }
+                clearMapMarkers();
+            });
+        }
+        else if (travelType == "NGR") {
+            for (var i = 1; i < best.length-1; i++) {
+                waypts.push({
+                    location: nodes[best[i]],
+                    stopover: true
+                });
+            }
+            // Pridedamas marsrutas i zemelapi
+            var request = {
+                origin: nodes[0],
+                destination: nodes[nodes.length - 1],
+                waypoints: waypts,
+                travelMode: 'DRIVING',
+            };
+            directionsService.route(request, function (response, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay.setDirections(response);
+                }
+                clearMapMarkers();
+            });
+        }
+        best.shift();
+        best.splice(best.length - 1, 1);
+    }
+    // Panaikina zymeklius ir kelius
+    function clearMapMarkers() {
+        for (index in markers) {
+            markers[index].setMap(null);
+        }
+        nodes = [];
+        if (polylinePath != undefined) {
+            polylinePath.setMap(null);
+        }
+        markers = [];
+    }
+    // Panaikina marsrutus, jei rodomi
+    function clearDirections() {
+        // Jeigu rodomas marsrutas, jį panaikina
+        if (directionsDisplay != null) {
+            directionsDisplay.setMap(null);
+            directionsDisplay = null;
+        }
+    }
+    // Isvalo zemelapi
+    function clearMap() {
+        clearMapMarkers();
+        clearDirections();
+        outputDiv.textContent = "";
+        output3.textContent = "";
+        route = [];
+        bestDuration = Infinity;
+        bestRoute = [];
+        adresses = [];
+        myLocation = false;
+        $('#destinations-count').html('0');
+    }
+    //Generuoja galimus aibes isdestymo variantus
+    function generatePermutations(Arr) {
+        var permutations = [];
+        var A = Arr.slice();
 
-            // Tikrina ar praejo pakankamai kartu
-            if (generation > ga.maxGenerations) {
-                clearInterval(evolveInterval);
+        function swap(a, b) {
+            var tmp = A[a];
+            A[a] = A[b];
+            A[b] = tmp;
+        }
 
-                if (completeCallBack != undefined) {
-                    completeCallBack({
+        function generate(n, A) {
+            if (n == 1) {
+                permutations.push(A.slice());
+            } else {
+                for (var i = 0; i <= n - 1; i++) {
+                    generate(n - 1, A);
+                    swap(n % 2 === 0 ? i : 0, n - 1);
+                }
+            }
+        }
+        generate(A.length, A);
+        return permutations;
+    }
+    //Generuoja visus marsrutus, kuriuos galima sudaryti is aibes
+    function generateCityRoutes(cities) {
+        var pems = null;
+        if (travelType == "GR")
+            pems = generatePermutations(cities.slice(1));
+        else if (travelType == "NGR")
+            pems = generatePermutations(cities.slice(1, cities.length - 1));
+        for (var i = 0; i < pems.length; i++) {
+            pems[i].unshift(cities[0]);
+            if (travelType == "GR") {
+                pems[i].push(cities[0]);
+            }
+            else if (travelType == "NGR") {
+                pems[i].push(cities[cities.length - 1]);
+            }
+        }
+        return pems;
+    }
+
+    google.maps.event.addDomListener(window, 'load', initializeMap);
+    google.maps.event.addDomListener(window, 'load', initAutocomplete);
+
+
+    // Genetinio algoritmo kodas
+    var ga = {
+        // algoritmo konstantos
+        "crossoverRate": 0.5,
+        "mutationRate": 0.1,
+        "populationSize": 50,
+        "tournamentSize": 5,
+        "elitism": true,
+        "maxGenerations": 100,
+        "tickerSpeed": 60,
+
+        // Evoliucionuoja populiacija
+        "evolvePopulation": function (population, generationCallBack, completeCallBack) {
+            var generation = 1;
+            var evolveInterval = setInterval(function () {
+                if (generationCallBack != undefined) {
+                    generationCallBack({
                         population: population,
                         generation: generation,
                     });
                 }
-            }
-        }, ga.tickerSpeed);
-    },
-    // Populiacijos klase
-    "population": function () {
-        // Populiacija - individu masyvas
-        this.individuals = [];
+                population = population.crossover();
+                population.mutate();
+                generation++;
 
-        // Pradine populiacija su atsitiktiniais individais
-        this.initialize = function (chromosomeLength) {
-            this.individuals = [];
+                // Tikrina ar praejo pakankamai kartu
+                if (generation > ga.maxGenerations) {
+                    clearInterval(evolveInterval);
 
-            for (var i = 0; i < ga.populationSize; i++) {
-                var newIndividual = new ga.individual(chromosomeLength);
-                newIndividual.initialize();
-                this.individuals.push(newIndividual);
-            }
-        };
-
-        // Mutuoja populiacija
-        this.mutate = function () {
-            var fittestIndex = this.getFittestIndex();
-            for (index in this.individuals) {
-                // Nemutuoti geriausio individo
-                if (ga.elitism != true || index != fittestIndex) {
-                    this.individuals[index].mutate();
-                }
-            }
-        };
-        // Pritaiko kryzminima ir grazina nauja karta
-        this.crossover = function () {
-            // nauja karta
-            var newPopulation = new ga.population();
-
-            var fittestIndex = this.getFittestIndex();
-            for (index in this.individuals) {
-                // Paima geriausia individa ir prideda ji i nauja karta
-                if (ga.elitism == true && index == fittestIndex) {
-                    // Replicate individual
-                    var eliteIndividual = new ga.individual(this.individuals[index].chromosomeLength);
-                    eliteIndividual.setChromosome(this.individuals[index].chromosome.slice());
-                    newPopulation.addIndividual(eliteIndividual);
-                } else {
-                    // Parenka su kuo maisys
-                    var parent = this.tournamentSelection();
-                    // Ir pritaiko kryzminima
-                    this.individuals[index].crossover(parent, newPopulation);
-                }
-            }
-
-            return newPopulation;
-        };
-        // Prideda individa i populiacija
-        this.addIndividual = function (individual) {
-            this.individuals.push(individual);
-        };
-        // Isrenka individa naudojant turnyro selekcija
-        this.tournamentSelection = function () {
-            for (var i = 0; i < this.individuals.length-1; i++) {
-                var randomIndex = Math.floor(Math.random() * this.individuals.length);
-                var tempIndividual = this.individuals[randomIndex];
-                this.individuals[randomIndex] = this.individuals[i];
-                this.individuals[i] = tempIndividual;
-            }
-            var tournamentPopulation = new ga.population();
-            for (var i = 0; i < ga.tournamentSize; i++) {
-
-                tournamentPopulation.addIndividual(this.individuals[i]);
-            }
-            var fittest = tournamentPopulation.getFittest();
-            return fittest;
-        };
-
-        // Grazina geriausio individo indeksa populiacijoje
-        this.getFittestIndex = function () {
-            var fittestIndex = 0;
-            for (var i = 1; i < this.individuals.length; i++) {
-                if (this.individuals[i].calcFitness() > this.individuals[fittestIndex].calcFitness()){
-                    fittestIndex = i;
-                }
-            }
-            return fittestIndex;
-        };
-        this.getFittest = function () {
-            return this.individuals[this.getFittestIndex()];
-        };
-    },
-    // Individo klase
-    "individual": function (chromosomeLength) {
-        this.chromosomeLength = chromosomeLength;
-        this.fitness = null;
-        this.chromosome = [];
-        // Sukuriamas atsitiktinis individas(marsrutas)
-        this.initialize = function () {
-            this.chromosome = [];
-            for (var i = 0; i < this.chromosomeLength-1; i++) {
-                this.chromosome.push(i+1);
-
-            }
-            for (var i = 0; i < this.chromosomeLength-1; i++) {
-                var randomIndex = Math.floor(Math.random()*(this.chromosome.length - 1));
-                var tempNode = this.chromosome[randomIndex];
-                this.chromosome[randomIndex] = this.chromosome[i];
-                this.chromosome[i] = tempNode;
-            }
-            this.chromosome.unshift(0);
-            this.chromosome.push(0);
-        };
-
-        // Nustato individo chromosomas (marsruto eiliskuma)
-        this.setChromosome = function (chromosome) {
-            this.chromosome = chromosome;
-        };
-
-        // Mutuoja individa
-        this.mutate = function () {
-            this.fitness = null;
-            this.chromosome.splice(this.chromosomeLength - 1, 1);
-            this.chromosome.shift();
-
-            // Daromi atsitiktiniai pakeitimai
-            for (index in this.chromosome) {
-                if (ga.mutationRate > Math.random()) {
-                    var randomIndex = Math.floor(Math.random() * this.chromosomeLength-1);
-                    var tempNode = this.chromosome[randomIndex];
-                    this.chromosome[randomIndex] = this.chromosome[index];
-                    this.chromosome[index] = tempNode;
-                }
-            }
-            this.chromosome.unshift(0);
-            this.chromosome.push(0);
-        };
-
-        // Grazina individo keliones trukme
-        this.getDistance = function () {
-            var totalDistance = 0;
-            for (index in this.chromosome) {
-                var startNode = this.chromosome[index];
-                var endNode = this.chromosome[0];
-                if ((parseInt(index) + 1) < this.chromosome.length) {
-                    endNode = this.chromosome[(parseInt(index) + 1)];
-                }
-                totalDistance += durations[startNode][endNode];
-            }
-
-            totalDistance += durations[startNode][endNode];
-
-            return totalDistance;
-        };
-        // Apskaiciuojamas individo tinkamumas
-        this.calcFitness = function () {
-            if (this.fitness != null) {
-                return this.fitness;
-            }
-
-            var totalDistance = this.getDistance();
-            this.fitness = 1 / totalDistance;
-            return this.fitness;
-        };
-        //Pritaiko kryzminima individui ir nurodytam partneriui ir rezultatus sudeda i nauja populiacija
-        this.crossover = function (individual, offspringPopulation) {
-            var offspringChromosome = [];
-            this.chromosome.splice(this.chromosomeLength - 1, 1);
-            this.chromosome.shift();
-            // Atsitiktinai atrenkama ka prideti i nauja populiacija
-            var startPos = Math.floor(this.chromosome.length * Math.random());
-            var endPos = Math.floor(this.chromosome.length * Math.random());
-            var i = startPos;
-            while (i != endPos) {
-                offspringChromosome[i] = individual.chromosome[i];
-                i++
-                if (i >= this.chromosome.length) {
-                    i = 0;
-                }
-            }
-            this.chromosome.unshift(0);
-            this.chromosome.push(0);
-            // Pridedama likusi informacija 
-            for (parentIndex in individual.chromosome) {
-                var node = individual.chromosome[parentIndex];
-                var nodeFound = false;
-                for (offspringIndex in offspringChromosome) {
-                    if (offspringChromosome[offspringIndex] == node) {
-                        nodeFound = true;
-                        break;
+                    if (completeCallBack != undefined) {
+                        completeCallBack({
+                            population: population,
+                            generation: generation,
+                        });
                     }
                 }
-                if (nodeFound == false) {
-                    for (var offspringIndex = 0; offspringIndex < individual.chromosome.length; offspringIndex++) {
-                        if (offspringChromosome[offspringIndex] == undefined) {
-                            offspringChromosome[offspringIndex] = node;
+            }, ga.tickerSpeed);
+        },
+        // Populiacijos klase
+        "population": function () {
+            // Populiacija - individu masyvas
+            this.individuals = [];
+
+            // Pradine populiacija su atsitiktiniais individais
+            this.initialize = function (chromosomeLength) {
+                this.individuals = [];
+
+                for (var i = 0; i < ga.populationSize; i++) {
+                    var newIndividual = new ga.individual(chromosomeLength);
+                    newIndividual.initialize();
+                    this.individuals.push(newIndividual);
+                }
+            };
+
+            // Mutuoja populiacija
+            this.mutate = function () {
+                var fittestIndex = this.getFittestIndex();
+                for (index in this.individuals) {
+                    // Nemutuoti geriausio individo
+                    if (ga.elitism != true || index != fittestIndex) {
+                        this.individuals[index].mutate();
+                    }
+                }
+            };
+            // Pritaiko kryzminima ir grazina nauja karta
+            this.crossover = function () {
+                // nauja karta
+                var newPopulation = new ga.population();
+
+                var fittestIndex = this.getFittestIndex();
+                for (index in this.individuals) {
+                    // Paima geriausia individa ir prideda ji i nauja karta
+                    if (ga.elitism == true && index == fittestIndex) {
+                        var eliteIndividual = new ga.individual(this.individuals[index].chromosomeLength);
+                        eliteIndividual.setChromosome(this.individuals[index].chromosome.slice());
+                        newPopulation.addIndividual(eliteIndividual);
+                    } else {
+                        // Parenka su kuo maisys
+                        var parent = this.tournamentSelection();
+                        // Ir pritaiko kryzminima
+                        this.individuals[index].crossover(parent, newPopulation);
+                    }
+                }
+
+                return newPopulation;
+            };
+            // Prideda individa i populiacija
+            this.addIndividual = function (individual) {
+                this.individuals.push(individual);
+            };
+            // Isrenka individa naudojant turnyro selekcija
+            this.tournamentSelection = function () {
+                for (var i = 0; i < this.individuals.length - 1; i++) {
+                    var randomIndex = Math.floor(Math.random() * this.individuals.length);
+                    var tempIndividual = this.individuals[randomIndex];
+                    this.individuals[randomIndex] = this.individuals[i];
+                    this.individuals[i] = tempIndividual;
+                }
+                var tournamentPopulation = new ga.population();
+                for (var i = 0; i < ga.tournamentSize; i++) {
+
+                    tournamentPopulation.addIndividual(this.individuals[i]);
+                }
+                var fittest = tournamentPopulation.getFittest();
+                return fittest;
+            };
+
+            // Grazina geriausio individo indeksa populiacijoje
+            this.getFittestIndex = function () {
+                var fittestIndex = 0;
+                for (var i = 1; i < this.individuals.length; i++) {
+                    if (this.individuals[i].calcFitness() > this.individuals[fittestIndex].calcFitness()) {
+                        fittestIndex = i;
+                    }
+                }
+                return fittestIndex;
+            };
+            this.getFittest = function () {
+                return this.individuals[this.getFittestIndex()];
+            };
+        },
+        // Individo klase
+        "individual": function (chromosomeLength) {
+            this.chromosomeLength = chromosomeLength;
+            this.fitness = null;
+            this.chromosome = [];
+            // Sukuriamas atsitiktinis individas(marsrutas)
+            this.initialize = function () {
+                this.chromosome = [];
+                for (var i = 0; i < this.chromosomeLength; i++) {
+                    this.chromosome.push(i + 1);
+
+                }
+                for (var i = 0; i < this.chromosomeLength; i++) {
+                    var randomIndex = Math.floor(Math.random() * (this.chromosome.length));
+                    var tempNode = this.chromosome[randomIndex];
+                    this.chromosome[randomIndex] = this.chromosome[i];
+                    this.chromosome[i] = tempNode;
+                }
+            };
+
+            // Nustato individo chromosomas (marsruto eiliskuma)
+            this.setChromosome = function (chromosome) {
+                this.chromosome = chromosome;
+            };
+
+            // Mutuoja individa
+            this.mutate = function () {
+                this.fitness = null;
+                // Daromi atsitiktiniai pakeitimai
+                for (index in this.chromosome) {
+                    if (ga.mutationRate > Math.random()) {
+                        var randomIndex = Math.floor(Math.random() * this.chromosomeLength);
+                        var tempNode = this.chromosome[randomIndex];
+                        this.chromosome[randomIndex] = this.chromosome[index];
+                        this.chromosome[index] = tempNode;
+                    }
+                }
+                
+            };
+
+            // Grazina individo keliones trukme
+            this.getDistance = function () {
+                var totalDistance = 0;
+                //console.log(this.chromosome);
+                //console.log(this.chromosome.length);
+                if (travelType == "GR") {
+                    this.chromosome.unshift(0);
+                    this.chromosome.push(0);
+                }
+                else if(travelType == "NGR"){
+                    this.chromosome.unshift(0);
+                    this.chromosome.push(this.chromosome.length);
+                }
+               // console.log(this.chromosome+"      "+this.chromosome.length);
+                for (var index = 0; index < this.chromosome.length-1 ; index++) {
+                    var startNode = this.chromosome[index];
+                    var endNode = this.chromosome[0];
+                    if ((parseInt(index)+1) < (this.chromosome.length)) {
+                        endNode = this.chromosome[(parseInt(index)+1)];
+                    }
+                    //console.log(startNode + " " + endNode);
+                    totalDistance += durations[startNode][endNode];
+                }
+                totalDistance += durations[startNode][endNode];
+                this.chromosome.shift();
+                this.chromosome.splice(this.chromosome.length - 1, 1);
+                //console.log(this.chromosome);
+                //console.log(totalDistance);
+                //console.log("");
+                return totalDistance;
+            };
+            // Apskaiciuojamas individo tinkamumas
+            this.calcFitness = function () {
+                if (this.fitness != null) {
+                    return this.fitness;
+                }
+
+                var totalDistance = this.getDistance();
+                this.fitness = 1 / totalDistance;
+                return this.fitness;
+            };
+            //Pritaiko kryzminima individui ir nurodytam partneriui ir rezultatus sudeda i nauja populiacija
+            this.crossover = function (individual, offspringPopulation) {
+                var offspringChromosome = [];
+                // Atsitiktinai atrenkama ka prideti i nauja populiacija
+                var startPos = Math.floor(this.chromosome.length * Math.random());
+                var endPos = Math.floor(this.chromosome.length * Math.random());
+                var i = startPos;
+                while (i != endPos) {
+                    offspringChromosome[i] = individual.chromosome[i];
+                    i++
+                    if (i >= this.chromosome.length) {
+                        i = 0;
+                    }
+                }
+                // Pridedama likusi informacija 
+                for (parentIndex in individual.chromosome) {
+                    var node = individual.chromosome[parentIndex];
+                    var nodeFound = false;
+                    for (offspringIndex in offspringChromosome) {
+                        if (offspringChromosome[offspringIndex] == node) {
+                            nodeFound = true;
                             break;
                         }
                     }
+                    if (nodeFound == false) {
+                        for (var offspringIndex = 0; offspringIndex < individual.chromosome.length; offspringIndex++) {
+                            if (offspringChromosome[offspringIndex] == undefined) {
+                                offspringChromosome[offspringIndex] = node;
+                                break;
+                            }
+                        }
+                    }
                 }
-            }
-            // Naujam individui pridedamos atrinktos chromosomos ir jis pridedamas prie naujos populiacijos 
-            var offspring = new ga.individual(this.chromosomeLength);
-            offspring.setChromosome(offspringChromosome);
-            offspringPopulation.addIndividual(offspring);
-        };
-    },
-};
-
+                // Naujam individui pridedamos atrinktos chromosomos ir jis pridedamas prie naujos populiacijos 
+                var offspring = new ga.individual(this.chromosomeLength);
+                offspring.setChromosome(offspringChromosome);
+                offspringPopulation.addIndividual(offspring);
+            };
+        },
+    };
 </script>
+
 </head>
+    <title>Maršruto planavimo priemonė</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #description {
+        font-family: Roboto;
+        font-size: 15px;
+        font-weight: 300;
+      }
+
+      #infowindow-content .title {
+        font-weight: bold;
+      }
+
+      #infowindow-content {
+        display: none;
+      }
+
+      #map #infowindow-content {
+        display: inline;
+      }
+
+      .pac-card {
+        margin: 10px 10px 0 0;
+        border-radius: 2px 0 0 2px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        outline: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        background-color: #fff;
+        font-family: Roboto;
+      }
+
+      #pac-container {
+        padding-bottom: 12px;
+        margin-right: 12px;
+      }
+
+      .pac-controls {
+        display: inline-block;
+        padding: 5px 11px;
+      }
+
+      .pac-controls label {
+        font-family: Roboto;
+        font-size: 13px;
+        font-weight: 300;
+      }
+
+      #pac-input {
+        background-color: #fff;
+        font-family: Roboto;
+        font-size: 15px;
+        font-weight: 300;
+        margin-left: 12px;
+        padding: 0 11px 0 13px;
+        text-overflow: ellipsis;
+        width: 400px;
+      }
+
+      #pac-input:focus {
+        border-color: #4d90fe;
+      }
+
+      #title {
+        color: #fff;
+        background-color: #4d90fe;
+        font-size: 25px;
+        font-weight: 500;
+        padding: 6px 12px;
+      }
+      #target {
+        width: 345px;
+      }
+    </style>
 <body>
 <div>
-  <div id="map-canvas" style="width:660px; height:560px;"></div>
+  <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+  <div id="map-canvas" style="width:800px; height:560px;"></div>
   <div>
     <table>
         <tr>
