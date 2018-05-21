@@ -9,11 +9,9 @@ Yra:
 - Paieška grįžtant į pradžią,
 - Genetinis algoritmas,
 - Ekrane spausdinamas kelionės atstumas bei apytikslis laiko įvertis,
-- Mygtukas, kurį paspaudus nustatoma vartotojo dabartinė vieta.
-
-Dirbama:
+- Mygtukas, kurį paspaudus nustatoma vartotojo dabartinė vieta,
 - Paieška nuo taško A iki B,
- 
-Planuojama padaryti:
-- Sutvarkyti tikslų numeraciją (nerodomas pirmas),
+- Laukas, į kurį galima įvesti adresus ranka.
+
+Galima padaryti:
 - Genetinio algoritmo optimizacija.
