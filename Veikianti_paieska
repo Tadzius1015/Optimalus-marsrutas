@@ -3,6 +3,7 @@
 <head>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5BAqtLqrAtsuq0Ya3FPJ2qGXmrLiSgvY&libraries=places">async defer></script>
+<link href="StyleSheet.css" rel="stylesheet"/>
 <script type="text/javascript">
 var map;
 var nodes = [];
@@ -12,6 +13,7 @@ var distances = [];
 var bestDuration;
 var bestRoute = [];
 var adresses = [];
+var distancesLength = [];
 var directionsDisplay = null;
 var directionsService;
 var polylinePath;
@@ -133,7 +135,7 @@ function findDurations() {
                     distances[originNodeIndex][destinationNodeIndex] = nodeDistanceData[destinationNodeIndex].distance.value;
                 }
             }
-            gg();
+            gg(adresses);
         })
     .fail(function (status) {
         output3.innerHTML = "Ivyko klaida gaunant informacija is google maps ";
@@ -144,14 +146,28 @@ function findDurations() {
 function calcDistance(points) {
     var sum = 0;
     var prev = 0;
-    points.splice(0, 1);
     for (var i = 0; i < points.length; i++) {
         var d = distances[prev][points[i]];
         prev = points[i];
         sum += d;
     }
-    points.unshift(0);
+    //points.unshift(0);
     return sum;
+}
+function Distance(points) {
+    var prev = 0;
+    if (travelType == "GR") {
+        points.unshift(0);
+        points.push(0);
+    }
+    else if (travelType == "NGR") {
+        points.unshift(0);
+        points.push(nodes.length - 1);
+    }
+    for (var i = 1; i < points.length; i++) {
+        distancesLength[i] = distances[prev][points[i]];
+        prev = points[i];
+    }
 }
 //Apskaiciuoja pateikto marsruto laika pagal eiles tvarka
 function calcDuration(points) {
@@ -181,29 +197,41 @@ function findShortest(perm) {
     return bestRoute;
 }
 
-function printRoute(best) {
-    outputDiv.innerHTML += adresses[0] + '<br>';
-    for (var i = 1; i < best.length; i++) {
-        outputDiv.innerHTML += adresses[best[i]] + '<br>';
-    }
-    outputDiv.innerHTML += " " + '<br>';
-}
 //Ekrane isspausdina
 function showRoute() {
     outputDiv.textContent = "";
     travelType = $('#travel-type').val();
     findDurations();  
 }
-    
-function gg() {
+   
+function addTable(address, best) {
+    var table = document.getElementById("myTable");
+    for (var i = 0; i < best.length; i++) {
+        var newRow = table.insertRow(table.length);
+        var ceil1 = newRow.insertCell(0);
+        var ceil2 = newRow.insertCell(1);
+        var ceil3 = newRow.insertCell(2);
+
+        ceil1.innerHTML = i + 1;
+        ceil2.innerHTML = adresses[best[i]];
+        if (i == 0) {
+            ceil3.innerHTML = "0";
+        }
+        else {
+            ceil3.innerHTML = (distancesLength[i] / 1000).toFixed(1) + "km";
+        }
+    }
+}
+function gg(adress) {
     if (nodes.length < 8) {
         var perm;
         var ind = Array.from(Array(nodes.length).keys());
         perm = generateCityRoutes(ind);
         t = true;
         var best = findShortest(perm);
-        printRoute(best);
         poly(best);
+        Distance(best);
+        addTable(adress, best);
     }
     else {
         if (directionsDisplay != null) {
@@ -263,6 +291,8 @@ function gg() {
             });
 
             });
+        Distance(best);
+        addTable(adress, best);
     }
     bestDuration = calcDuration(best);
     bestDistance = calcDistance(best);
@@ -345,10 +375,10 @@ function gg() {
     }
     // Isvalo zemelapi
     function clearMap() {
+        $('#myTable').find("tr:not(:first)").remove();
         clearMapMarkers();
         clearDirections();
-        outputDiv.textContent = "";
-        output3.textContent = "";
+        $('#outputDiv').html("");
         route = [];
         bestDuration = Infinity;
         bestRoute = [];
@@ -567,8 +597,6 @@ function gg() {
             // Grazina individo keliones trukme
             this.getDistance = function () {
                 var totalDistance = 0;
-                //console.log(this.chromosome);
-                //console.log(this.chromosome.length);
                 if (travelType == "GR") {
                     this.chromosome.unshift(0);
                     this.chromosome.push(0);
@@ -577,22 +605,17 @@ function gg() {
                     this.chromosome.unshift(0);
                     this.chromosome.push(this.chromosome.length);
                 }
-               // console.log(this.chromosome+"      "+this.chromosome.length);
                 for (var index = 0; index < this.chromosome.length-1 ; index++) {
                     var startNode = this.chromosome[index];
                     var endNode = this.chromosome[0];
                     if ((parseInt(index)+1) < (this.chromosome.length)) {
                         endNode = this.chromosome[(parseInt(index)+1)];
                     }
-                    //console.log(startNode + " " + endNode);
                     totalDistance += durations[startNode][endNode];
                 }
                 totalDistance += durations[startNode][endNode];
                 this.chromosome.shift();
                 this.chromosome.splice(this.chromosome.length - 1, 1);
-                //console.log(this.chromosome);
-                //console.log(totalDistance);
-                //console.log("");
                 return totalDistance;
             };
             // Apskaiciuojamas individo tinkamumas
@@ -734,7 +757,7 @@ function gg() {
     </style>
 <body>
 <div>
-  <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+  <input id="pac-input" class="controls" type="text" placeholder="Įveskite adresą">
   <div id="map-canvas" style="width:800px; height:560px;"></div>
   <div>
     <table>
@@ -757,7 +780,15 @@ function gg() {
     </table>
   </div>
 </div>
-    <div id="outputDiv"></div>
-    <div id="output3"> </div>
+    <div class="tablee">
+        <table id="myTable" class="tableee">
+        <tr>
+            <th>Eil.Nr</th>
+            <th>Adresas</th>
+            <th>Atstumas</th>
+        </tr>
+    </table>
+        <div id="outputDiv"></div>
+    </div>   
 </body>
 </html>
