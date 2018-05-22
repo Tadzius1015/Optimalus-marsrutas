@@ -1,0 +1,66 @@
+﻿ody
+{
+}
+.Logo {
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+}
+.Header-Name {
+    font-size: 60px;
+    font-family :fantasy;
+}
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #ae1212;
+}
+
+li {
+    float: left;
+}
+
+    li a {
+        display: inline-block;
+        color: white;
+        text-align: center;
+        padding: 15px 50px;
+        text-decoration: none;
+    }
+
+    li a:hover {
+        background-color: #111;
+    }
+.NavigationBar {
+
+}
+
+.tab{
+    display : none;
+}
+.NavigationBar {
+    align-content : center;
+}
+.MainContainer{
+    margin-left: 100px;
+    margin-right:100px;
+}
+
+.Page-Footer {
+    font-size: 20px;
+    font-family: 'Microsoft YaHei';
+}
+
+.Foot-Container {
+    text-align: center;
+}
+
+.CopyRight {
+    align-content: center;
+}
+
+.Foot01 {
+    margin-right: 60px;
+}

@@ -1,4 +1,7 @@
-﻿.container1
+﻿body
+{
+}
+.container1
 {
     text-align: center;
     position:relative;
@@ -28,6 +31,9 @@
 }
 .personalfotos
 {
-    width:300px;
-    height:300px;
+    width:200px;
+    height:200px;
+}
+.apiemus {
+    margin-bottom: 150px
 }
