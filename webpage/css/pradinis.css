@@ -2,14 +2,11 @@
 {
 }
 .Logo {
-    width: 60px;
+    width: 460px;
     height: 60px;
     cursor: pointer;
 }
-.Header-Name {
-    font-size: 60px;
-    font-family :fantasy;
-}
+
 ul {
     list-style-type: none;
     margin: 0;
@@ -47,6 +44,12 @@ li {
     margin-left: 100px;
     margin-right:100px;
 }
+.Langtapped {
+    float: right;
+}
+.atapped {
+    padding: 15px 20px;
+}
 
 .Page-Footer {
     font-size: 20px;
@@ -62,5 +65,17 @@ li {
 }
 
 .Foot01 {
-    margin-right: 60px;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #ae1212;
+    color: white;
+    text-align: center;
+}
+.applogo {
+    width: 105px;
+    height: 38px;
+    position: absolute;
+    margin-left:5px;
 }
