@@ -19,38 +19,35 @@
     <div class="MainContainer">
         <header>
             <div class="Header">
-                <img class="Logo" src="file:///C:/Users/Deividas/Desktop/Optimalus-masrutas/logomap.svg" />
-                <a class="Header-Name">
-                    Sveiki atvykę!
-                </a>
+                <img class="Logo" src="./Images/markerlogoLT.PNG" />
             </div>
         </header>
-        </div>
-        <div class="NavigationBar">
-            <ul class="Navigation">
-                <li class="tabbed" role="tab" aria-controls="Main">
-                    <a href="javascript: toggleChildren('Main');" class="a_top_hypers"> Pradinis</a>
-                </li>
-                <li class="tabbed" role="tab" aria-controls="Map">
-                    <a href="javascript: toggleChildren('Map');" class="a_top_hypers"> Žemėlapis</a>
-                </li>
-                <li class="tabbed" role="tab" aria-controls="AboutUs">
-                    <a href="javascript: toggleChildren('AboutUs');" class="a_top_hypers"> Apie mus</a>
-                </li>
-                <li class="tabbed" role="tab" aria-controls="Instruction">
-                    <a href="javascript: toggleChildren('Instruction');" class="a_top_hypers"> Naudojimo instrukcija</a>
-                </li>
-                <li class="tabbed1" role="tab" aria-controls="English" onclick="window.location.href='./pradinis.html'">
-                    <a href="javascript: toggleChildren('Lietuviškai');" class="a_top_hypers"> English</a>
-                </li>
-            </ul>
+    </div>
+    <div class="NavigationBar">
+        <ul class="Navigation">
+            <li class="tabbed" role="tab" aria-controls="Main">
+                <a href="javascript: toggleChildren('Main');" class="a_top_hypers"> Pradinis</a>
+            </li>
+            <li class="tabbed" role="tab" aria-controls="Map">
+                <a href="javascript: toggleChildren('Map');" class="a_top_hypers"> Žemėlapis</a>
+            </li>
+            <li class="tabbed" role="tab" aria-controls="AboutUs">
+                <a href="javascript: toggleChildren('AboutUs');" class="a_top_hypers"> Apie mus</a>
+            </li>
+            <li class="tabbed" role="tab" aria-controls="Instruction">
+                <a href="javascript: toggleChildren('Instruction');" class="a_top_hypers"> Naudojimo instrukcija</a>
+            </li>
+            <li class="Langtapped" role="tab" aria-controls="English" onclick="window.location.href='./pradinis.html'">
+                <a href="javascript: toggleChildren('Lietuviškai');" class="atapped"> EN</a>
+            </li>
+        </ul>
+
+    </div>
+    <div role="tabpanel" class="tab" id="Main">
+        <div class="Container01">
 
         </div>
-        <div role="tabpanel" class="tab" id="Main">
-            <div class="Container01">
-
-            </div>
-        </div>
+    </div>
     <div role="tabpanel" class="tab" id="Map">
         <script type="text/javascript">
             var map;
@@ -98,7 +95,7 @@
 
                 function getMyLocation(myLocationDiv, map) {
                     var myLocationBtn = document.createElement('button');
-                    myLocationBtn.innerHTML = 'My location';
+                    myLocationBtn.innerHTML = 'Mano vieta';
                     myLocationBtn.className = 'large-btn';
                     myLocationBtn.style.margin = '5px';
                     myLocationBtn.style.opacity = '0.95';
@@ -738,80 +735,78 @@
         <div>
             <table class="table_2">
                 <tr>
-                    <td>Norimų keliauti vietų skaičius: </td>
-                    <td id="destinations-count">0</td>
+                    <td><button class="btn" onclick="showRoute()">Rasti maršrutą</button> <button class="btn" onclick="clearMap()">Išvalyti žemėlapį</button></td>
+                    <td style="float:right;">
+                        <div class="custom-select" style="width:300px;">
+                            <select id="travel-type">
+                                <option value="GR">Grįžtama į pradžią</option>
+                                <option value="NGR">Važiojama į paskutinį pažymėtą</option>
+                            </select>
+                        </div></td>
+                    
                 </tr>
-                <tr>
-                    <td>Kelionės tipas</td>
-                    <td>
-
-                        <select class="Select_1" id="travel-type">
-                            <option value="GR">Grįžti atgal į pradžią</option>
-                            <option value="NGR">Negrįžti atgal</option>
-                        </select>
-
-
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2"><button class="btn" onclick="showRoute()">Rasti maršrutą</button> <button class="btn" onclick="clearMap()">Išvalyti žemėlapį</button></td>
+            </table>
+            <table style="margin-bottom:80px;">
+                 <tr>
+                <td>Norimų keliauti vietų skaičius: </td>
+                <td style="float:left;" id="destinations-count">0</td>
                 </tr>
             </table>
         </div>
 
     </div>
 
-        <div role="tabpanel" class="tab" id="AboutUs">
-            <div class="Conatainer03">
-                <div Container0301">
-                    <a class="text">Projekto komanda</a>
-                </div>
-                <div class="apiemus">
-                    <div class="row">
-                        <div class="column">
-                            <h2>Tadas Meškauskas</h2>
-                            <p>Pareigos: komandos vadovas, programuotojas-dizaineris</p>
-                            <p>Kontaktai: tadas.meskauskas@ktu.edu</p>
-                            <img class="personalfotos" src="file:///C:/Users/Deividas/Desktop/Optimalus-marsrutas-master/webpage/images/tadas.jpg" />
-                        </div>
-                        <div class="column">
-                            <h2>Deividas Patalauskas</h2>
-                            <p>Pareigos: programuotojas-dizaineris</p>
-                            <p>Kontaktai: deividas.patalauskas@ktu.edu</p>
-                            <img class="personalfotos" src="file:///C:/Users/Deividas/Desktop/Optimalus-marsrutas-master/webpage/images/deividas.jpg" />
-                        </div>
-                        <div class="column">
-                            <h2>Remigijus Žebrauskas</h2>
-                            <p>Pareigos: analitikas-programuotojas</p>
-                            <p>Kontaktai: remigijus.zebrauskas@ktu.edu</p>
-                            <img class="personalfotos" src="file:///C:/Users/Deividas/Desktop/Optimalus-marsrutas-master/webpage/images/remigijus.jpg" />
-                        </div>
+    <div role="tabpanel" class="tab" id="AboutUs">
+        <div class="Conatainer03">
+            <div Container0301">
+                <a class="text">Projekto komanda</a>
+            </div>
+            <div class="apiemus">
+                <div class="row">
+                    <div class="column">
+                        <h2>Tadas Meškauskas</h2>
+                        <p>Pareigos: komandos vadovas, programuotojas-dizaineris</p>
+                        <p>Kontaktai: tadas.meskauskas@ktu.edu</p>
+                        <img class="personalfotos" src="./Images/tadas.jpg" />
+                    </div>
+                    <div class="column">
+                        <h2>Deividas Patalauskas</h2>
+                        <p>Pareigos: programuotojas-dizaineris</p>
+                        <p>Kontaktai: deividas.patalauskas@ktu.edu</p>
+                        <img class="personalfotos" src="./Images/deividas.jpg" />
+                    </div>
+                    <div class="column">
+                        <h2>Remigijus Žebrauskas</h2>
+                        <p>Pareigos: analitikas-programuotojas</p>
+                        <p>Kontaktai: remigijus.zebrauskas@ktu.edu</p>
+                        <img class="personalfotos" src="./Images/remigijus.jpg" />
                     </div>
                 </div>
             </div>
         </div>
-        <div role="tabpanel" class="tab" id="Instruction">
-            <div class="Container04">
-                <div class="Container0401">
-                    <h2>Naudojimo instrukcija</h2>
-                    <div class="naudojima">
-                        <P>1. Pažymėti adresus žemėlapyje arba juos įvesti laukelyje.</P>
-                        <p>2. Spausti Rasti.</p>
-                        <p>3. Programa pateiks geriausią variantą mašruto.</p>
-                        <p>4. Išvalyti mygtukas išvalo pažymėtus ar įvestus adresus.</p>
-                    </div>
+    </div>
+    <div role="tabpanel" class="tab" id="Instruction">
+        <div class="Container04">
+            <div class="Container0401">
+                <h2>Naudojimo instrukcija</h2>
+                <div class="naudojima">
+                    <P>1. Pažymėti adresus žemėlapyje arba juos įvesti laukelyje.</P>
+                    <p>2. Spausti Rasti.</p>
+                    <p>3. Programa pateiks geriausią variantą mašruto.</p>
+                    <p>4. Išvalyti mygtukas išvalo pažymėtus ar įvestus adresus.</p>
                 </div>
             </div>
         </div>
-        <div role="tabpanel" class="tab" id="Lithuanian">
-        </div>
-        <footer id="page-footer" class="Page-Footer">
-            <div class="Foot-Container">
-                <div class="Foot01">
-                    <a class="CopyRight">Armatūra copyright © 2018</a>
-                    <img class="applogo" src="C:\Users\Tadas\Desktop\download.png" width="300px" height="75px" />
-                </div>
+    </div>
+    <div role="tabpanel" class="tab" id="Lithuanian">
+    </div>
+    <footer id="page-footer" class="Page-Footer">
+        <div class="Foot-Container">
+            <div class="Foot01">
+                <a class="CopyRight">© 2018 Armatūra all rights reserved. Powered by Google</a>
             </div>
-        </footer>
+        </div>
+    </footer>
+    <script src="./js/Select.js"></script>
 </body>
 </html>
