@@ -1,0 +1,99 @@
+﻿body {
+}
+/*.tablee
+{
+    position:relative;
+    bottom:600px;
+    left:65%;
+}
+table
+{
+    background-color:#080372;
+}
+
+table th
+{
+    color:#ffeb06;
+    border:1px solid;
+}
+table tr
+{
+    color:white;
+}*/
+#myTable {
+    font-family: Microsoft YaHei;
+    border-collapse: collapse;
+    width: 40%;
+}
+
+    #myTable td, #myTable th {
+        border: 0px solid;
+        padding: 5px;
+    }
+
+    #myTable tr:nth-child(even) {
+        background-color: #fcbdbd;
+    }
+
+    #myTable tr:hover {
+        background-color: #ae1212;
+        color: white;
+    }
+
+    #myTable th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #ae1212;
+        color: white;
+    }
+
+.Map_Container_ROW:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.Column_Map {
+    float: left;
+}
+
+.Column_Table {
+    float: right;
+}
+
+.btn {
+    background-color: #ae1212;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    float: left;
+}
+
+    .btn:hover {
+        background-color: #000000;
+    }
+
+.table_2 th, td {
+    font-family: Microsoft YaHei;
+    padding: 15px;
+}
+
+.Select_1 {
+    font-family: Microsoft YaHei;
+    width: 240px;
+    height: 35px;
+    color: white;
+    overflow: hidden;
+    background: url(new_arrow.png) no-repeat right #ae1212;
+    border: 0px;
+}
+
+    .Select_1:hover {
+        background: right #000000;
+    }
