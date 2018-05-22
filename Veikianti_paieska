@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
@@ -96,6 +96,7 @@ function initAutocomplete() {
             nodes.push(place.geometry.location);
             $('#destinations-count').html(nodes.length);        
         });
+        document.getElementById('pac-input').value = '';
     });
 }
 
@@ -206,7 +207,9 @@ function showRoute() {
    
 function addTable(address, best) {
     var table = document.getElementById("myTable");
+    console.log("Length in table"+best.length);
     for (var i = 0; i < best.length; i++) {
+        console.log(best[i]);
         var newRow = table.insertRow(table.length);
         var ceil1 = newRow.insertCell(0);
         var ceil2 = newRow.insertCell(1);
@@ -375,16 +378,16 @@ function gg(adress) {
     }
     // Isvalo zemelapi
     function clearMap() {
-        $('#myTable').find("tr:not(:first)").remove();
         clearMapMarkers();
         clearDirections();
-        $('#outputDiv').html("");
+        outputDiv.textContent = "";
         route = [];
         bestDuration = Infinity;
         bestRoute = [];
         adresses = [];
         myLocation = false;
         $('#destinations-count').html('0');
+        $('#myTable').find("tr:not(:first)").remove();
     }
     //Generuoja galimus aibes isdestymo variantus
     function generatePermutations(Arr) {
@@ -756,32 +759,11 @@ function gg(adress) {
       }
     </style>
 <body>
-<div>
-  <input id="pac-input" class="controls" type="text" placeholder="Įveskite adresą">
-  <div id="map-canvas" style="width:800px; height:560px;"></div>
-  <div>
-    <table>
-        <tr>
-            <td>Norimu aplankyti vietu skaicius: </td>
-            <td id="destinations-count">0</td>
-        </tr>
-        <tr>
-            <td>Kelionės tipas</td>
-            <td>
-                <select id="travel-type">
-                    <option value="GR">Grįžtama į pradžią</option>
-                    <option value="NGR">Važiojama į paskutinį pažymėtą</option>
-                </select>
-            </td>
-            </tr>
-        <tr>
-            <td colspan="2"><button onclick="showRoute()">Rasti maršrutą</button> <button class="btn" onclick="clearMap()">Išvalyti žemėlapį</button></td>
-        </tr>
-    </table>
-  </div>
-</div>
-    <div class="tablee">
-        <table id="myTable" class="tableee">
+<div class="Map_Container_ROW">
+  <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+  <div class="Column_Map" id="map-canvas" style="width:60%; height:560px;"></div>
+  <div class="tablee">
+        <table id="myTable" class="Column_Table">
         <tr>
             <th>Eil.Nr</th>
             <th>Adresas</th>
@@ -789,6 +771,31 @@ function gg(adress) {
         </tr>
     </table>
         <div id="outputDiv"></div>
-    </div>   
+    </div>
+</div>
+    
+    <div>
+    <table class="table_2">
+        <tr>
+            <td>Norimu aplankyti vietu skaicius: </td>
+            <td id="destinations-count">0</td>
+        </tr>
+        <tr>
+            <td>Kelionės tipas</td>
+            <td>
+
+                    <select  class="Select_1" id="travel-type">
+                    <option value="GR">Grįžtama į pradžią</option>
+                    <option value="NGR">Važiojama į paskutinį pažymėtą</option>
+                    </select>
+
+                
+            </td>
+            </tr>
+        <tr>
+            <td colspan="2"><button class="btn" onclick="showRoute()">Rasti maršrutą</button> <button class="btn" onclick="clearMap()">Išvalyti žemėlapį</button></td>
+        </tr>
+    </table>
+  </div>
 </body>
 </html>
