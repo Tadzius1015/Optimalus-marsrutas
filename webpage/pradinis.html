@@ -2,9 +2,12 @@
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <link rel="stylesheet" href="file:///C:/Users/Deividas/Desktop/Optimalus-masrutas/CSS/pradinis.css" />
-    <link rel="stylesheet" href="file:///C:/Users/Deividas/Desktop/Optimalus-masrutas/CSS/DesignApieMus.css" />
-    <link rel="stylesheet" href="file:///C:/Users/Deividas/Desktop/Optimalus-marsrutas-master/webpage/css/DesignInstrukcija.css" />
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyAlp3b8_E2--5HWmSBRYLPohpZHEbUBjSM"></script>
+    <link rel="stylesheet" href="C:\Users\Tadas\Desktop\projektas\Optimalus-marsrutas\webpage\css\pradinis.css" />
+    <link rel="stylesheet" href="C:\Users\Tadas\Desktop\projektas\Optimalus-marsrutas\webpage\css\DesignApieMus.css" />
+    <link rel="stylesheet" href="C:\Users\Tadas\Desktop\DesignInstrukcija.css" />
+    <script src="C:\Users\Tadas\Desktop\projektas\Optimalus-marsrutas\webpage\js\pradinis.js"></script>
+    <script src="C:\Users\Tadas\Desktop\projektas\Optimalus-marsrutas\webpage\js\mapscript.js"></script>
     <meta charset="utf-8" />
     <title></title>
 </head>
@@ -18,6 +21,7 @@
                 </a>
             </div>
         </header>
+    </div>
         <div class="NavigationBar">
             <ul class="Navigation">
                 <li class="tabbed" role="tab" aria-controls="Main">
@@ -42,30 +46,67 @@
         </div>
         <div role="tabpanel" class="tab" id="Map">
             <div id="map"></div>
+                <li class="tabbed1" role="tab" aria-controls="Lietuviškai" >
+                    <a href="javascript: toggleChildren('Lietuviškai');" class="a_top_hypers" onclick="window.location.href='file:///C:/Users/Tadas/Desktop/projektas/Optimalus-marsrutas/webpage/pradinislt.html'"> Lietuviškai</a>
+                </li>
+            </ul>
+
+        </div>
+        <div role="tabpanel" class="tab" id="Main">
+            <div class="Container01">
+                <video autoplay="true" loop muted>
+                    <source src="C:\Users\Tadas\Downloads\video.mp4" />
+                    <div class="text-container">
+                        <p class="text1">Sveiki atvykę į mūsų puslapį :)</p>
+                        <p class="text2">Mes viliamės, kad rasite tai, ko jums reikia.</p>
+                        <p class="text3">Prieš naudodami patariame jums paskaityti vartotojo instrukciją, kurioje yra visos funkcijos.</p>
+                        <p class="text4">P.S. projektas yra kūrimo stadijoje, todėl nenustebkite, jog puslapis ar kai kurios funkcijos gali laikinai neveikti.</p>
+                    </div>
+                </video>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab" id="Map">
+            <div>
+                <div id="map-canvas" style="width:660px; height:560px;"></div>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Norimu aplankyti vietu skaicius: </td>
+                            <td id="destinations-count">0</td>
+                        </tr>
+                        <tr id="ga-buttons">
+                            <td colspan="2"><button onclick="showRoute()">Rasti maršrutą</button> <button class="btn" onclick="clearMap()">Išvalyti žemėlapį</button></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div id="outputDiv"></div>
+            <div id="output2"> </div>
+            <div id="output3"> </div>
         </div>
         <div role="tabpanel" class="tab" id="AboutUs">
             <div class="Conatainer03">
                 <div Container0301">
-                    <a class="text">Projekto komanda</a>
+                    <a class="text">Project Team</a>
                 </div>
                 <div class="apiemus">
                     <div class="row">
                         <div class="column">
                             <h2>Tadas Meškauskas</h2>
-                            <p>Pareigos: komandos vadovas, programuotojas-dizaineris</p>
-                            <p>Kontaktai: tadas.meskauskas@ktu.edu</p>
+                            <p>Position: head manager, programmer-designer(front-end)</p>
+                            <p>Contacts: tadas.meskauskas@ktu.edu</p>
                             <img class="personalfotos" src="file:///C:/Users/Deividas/Desktop/Optimalus-marsrutas-master/webpage/images/tadas.jpg" />
                         </div>
                         <div class="column">
                             <h2>Deividas Patalauskas</h2>
-                            <p>Pareigos: programuotojas-dizaineris</p>
-                            <p>Kontaktai: deividas.patalauskas@ktu.edu</p>
+                            <p>Position: programmer-designer(front-end)</p>
+                            <p>Contacts: deividas.patalauskas@ktu.edu</p>
                             <img class="personalfotos" src="file:///C:/Users/Deividas/Desktop/Optimalus-marsrutas-master/webpage/images/deividas.jpg" />
                         </div>
                         <div class="column">
                             <h2>Remigijus Žebrauskas</h2>
-                            <p>Pareigos: analitikas-programuotojas</p>
-                            <p>Kontaktai: remigijus.zebrauskas@ktu.edu</p>
+                            <p>Position: programmer(back-end)</p>
+                            <p>Contacts: remigijus.zebrauskas@ktu.edu</p>
                             <img class="personalfotos" src="file:///C:/Users/Deividas/Desktop/Optimalus-marsrutas-master/webpage/images/remigijus.jpg" />
                         </div>
                     </div>
@@ -75,12 +116,12 @@
         <div role="tabpanel" class="tab" id="Instruction">
             <div class="Container04">
                 <div class="Container0401">
-                    <h2>Naudojimo instrukcija</h2>
+                    <h2>Manual</h2>
                     <div class="naudojima">
-                        <P>1. Pažymėti adresus žemėlapyje arba juos įvesti laukelyje.</P>
-                        <p>2. Spausti Rasti.</p>
-                        <p>3. Programa pateiks geriausią variantą mašruto.</p>
-                        <p>4. Išvalyti mygtukas išvalo pažymėtus ar įvestus adresus.</p>
+                        <P>1. Mark adresses in map or write it in field </P>
+                        <p>2. Press find</p>
+                        <p>3. Then program gives best possible route</p>
+                        <p>4. When you want to repeat, press button clean and then all adresses will be cleaned</p>
                     </div>
                 </div>
             </div>
@@ -142,5 +183,18 @@
     <script async defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5BAqtLqrAtsuq0Ya3FPJ2qGXmrLiSgvY&callback=initMap">
     </script>
+        <div role="tabpanel" class="tab" id="Lithuanian">
+        </div>
+        <footer id="page-footer" class="Page-Footer">
+            <div class="Foot-Container">
+                <div class="Foot01">
+                    <a class="CopyRight">Armatūra copyright © 2018</a>
+                    <img class="applogo" src="C:\Users\Tadas\Desktop\download.png" width="300px" height="75px" />
+                </div>
+            </div>
+        </footer>
+        <script async defer
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5BAqtLqrAtsuq0Ya3FPJ2qGXmrLiSgvY&callback=initMap">
+        </script>
 </body>
 </html>

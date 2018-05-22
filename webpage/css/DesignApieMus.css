@@ -4,6 +4,8 @@
 .container1
 {
     text-align: center;
+    position:relative;
+    top:130px;
 }
 .text
 {
@@ -15,6 +17,11 @@
     width:33.3%;
     padding:10px;
     height:300px;
+}
+.row
+{
+    position:relative;
+    top:115px;
 }
 .row:after
 {
