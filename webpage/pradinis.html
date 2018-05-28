@@ -1,12 +1,12 @@
 ﻿<!DOCTYPE html>
-
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5BAqtLqrAtsuq0Ya3FPJ2qGXmrLiSgvY&libraries=places">async defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=places&sensor=false"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyAlp3b8_E2--5HWmSBRYLPohpZHEbUBjSM"></script>
     <link rel="stylesheet" href="./css/pradinis.css" />
     <link rel="stylesheet" href="./css/DesignApieMus.css" />
+    <link rel="stylesheet" href="./css/Design.css" />
     <link rel="stylesheet" href="./css/DesignInstrukcija.css" />
     <link rel="stylesheet" href="./css/Lentele1.css" />
     <link rel="stylesheet" href="./css/Lentele2.css" />
@@ -19,7 +19,7 @@
     <div class="MainContainer">
         <header>
             <div class="Header">
-                <img class="Logo" src="./Images/markerlogoEN.PNG" />
+                <img class="Logo" src="./images/markerlogoEN.PNG" />
             </div>
         </header>
     </div>
@@ -38,14 +38,20 @@
                 <a href="javascript: toggleChildren('Instruction');" class="a_top_hypers"> Instruction</a>
             </li>
             <li class="Langtapped" role="tab" aria-controls="Lietuviškai">
-                <a href="javascript: toggleChildren('Lietuviškai');" class="atapped" onclick="window.location.href='./pradinislt.html'"> LT</a>
+                <a href="javascript: toggleChildren('Lietuviškai');" class="atapped" onclick="window.location.href='./index.html'"> LT</a>
             </li>
         </ul>
-
     </div>
     <div role="tabpanel" class="tab" id="Main">
-        <div class="Container01">
-
+        <video autoplay="true" loop muted>
+            <source src="./video/video.mp4" />
+        </video>
+        <div class="text-container">
+            <p class="text1">Hello to everyone, who comes to our page :)</p>
+            <p class="text2">We ar hopefully that you will find everything you need.</p>
+            <p class="text3">Before using our website, please read manual/instructions.</p>
+            <p class="text4">P.S. our project is undermaintance, sometimes the website can not be achievable or some kind of functions will not work well.</p>
+            <p class="text4">If you have noticed some error(s) on the website, please feel free and contact to our team and we will try to solve it</p>
         </div>
     </div>
     <div role="tabpanel" class="tab" id="Map">
@@ -718,7 +724,7 @@
             };
         </script>
         <div class="Map_Container_ROW">
-            <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+            <input id="pac-input" class="controls" type="text" placeholder="Write address">
             <div class="Column_Map" id="map-canvas" style="width:60%; height:560px;"></div>
             <div class="tablee">
                 <table id="myTable" class="Column_Table">
@@ -743,12 +749,11 @@
                             </select>
                         </div>
                     </td>
-
                 </tr>
             </table>
             <table style="margin-bottom:80px;">
                 <tr>
-                    <td>Count of marked/writed places in map: </td>
+                    <td class="bg-info">Count of marked/written places in map: </td>
                     <td style="float:left;" id="destinations-count">0</td>
                 </tr>
             </table>
