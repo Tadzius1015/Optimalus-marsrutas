@@ -2,7 +2,9 @@
   "Framework": "jasmine",
   "References": [
     { "Path": "Source/calcDistance.js" },
-    { "Path": "Source/clearDirections.js" }
+    { "Path": "Source/clearDirections.js" },
+    { "Path": "Source/calcDuration.js" },
+    { "Path": "Source/generateCityRoutes.js" },
   ],
 
   "Tests": [
