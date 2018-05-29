@@ -1,6 +1,11 @@
-﻿.container1
+﻿body
+{
+}
+.container1
 {
     text-align: center;
+    position:relative;
+    top:130px;
 }
 .text
 {
@@ -9,9 +14,14 @@
 }
 .column{
     float:left;
-    width:33.3%;
+    width:30%;
     padding:10px;
     height:300px;
+}
+.row
+{
+    position:relative;
+    top:115px;
 }
 .row:after
 {
@@ -21,6 +31,9 @@
 }
 .personalfotos
 {
-    width:300px;
-    height:300px;
+    width:200px;
+    height:200px;
+}
+.apiemus {
+    margin-bottom: 150px
 }

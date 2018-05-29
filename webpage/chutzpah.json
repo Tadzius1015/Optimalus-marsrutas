@@ -1,0 +1,11 @@
+﻿{
+  "Framework": "jasmine",
+  "References": [
+    { "Path": "Source/calcDistance.js" },
+    { "Path": "Source/clearDirections.js" }
+  ],
+
+  "Tests": [
+    { "Path": "Tests" }
+  ]
+}

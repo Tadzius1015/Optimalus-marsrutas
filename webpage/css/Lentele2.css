@@ -1,0 +1,138 @@
+﻿body {
+}
+
+#myTable {
+    font-family: Microsoft YaHei;
+    border-collapse: collapse;
+    width: 40%;
+}
+
+    #myTable td, #myTable th {
+        border: 0px solid;
+        padding: 5px;
+    }
+
+    #myTable tr:nth-child(even) {
+        background-color: #fcbdbd;
+    }
+
+    #myTable tr:hover {
+        background-color: #ae1212;
+        color: white;
+    }
+
+    #myTable th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #ae1212;
+        color: white;
+    }
+
+.Map_Container_ROW:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.Column_Map {
+    float: left;
+}
+
+.Column_Table {
+    float: right;
+}
+
+.btn {
+    background-color: #ae1212;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    float: left;
+}
+
+    .btn:hover {
+        background-color: #000000;
+    }
+
+
+.table_2 {
+    font-family: Microsoft YaHei;
+    background: #ae1212;
+    border-collapse: collapse;
+    width: 60%;
+}
+
+/*.Select_1 {
+    font-family: Microsoft YaHei;
+    width: 240px;
+    height: 35px;
+    color: white;
+    overflow: hidden;
+    background: url(new_arrow.png) no-repeat right #ae1212;
+    border: 0px;
+}
+
+    .Select_1:hover {
+        background: right #000000;
+    }*/
+/*the container must be positioned relative:*/
+.custom-select {
+    position: relative;
+    font-family: Arial;
+}
+
+    .custom-select select {
+        display: none; /*hide original SELECT element:*/
+    }
+
+.select-selected {
+    background-color: #ae1212;
+}
+    /*style the arrow inside the select element:*/
+    .select-selected:after {
+        position: absolute;
+        content: "";
+        top: 14px;
+        right: 10px;
+        width: 0;
+        height: 0;
+        border: 6px solid transparent;
+        border-color: #fff transparent transparent transparent;
+    }
+    /*point the arrow upwards when the select box is open (active):*/
+    .select-selected.select-arrow-active:after {
+        border-color: transparent transparent #fff transparent;
+        top: 7px;
+    }
+/*style the items (options), including the selected item:*/
+.select-items div, .select-selected {
+    color: #ffffff;
+    padding: 15px 30px;
+    border: 0px solid transparent;
+    border-color: transparent transparent rgba(0, 0, 0, 0) transparent;
+    cursor: pointer;
+    user-select: none;
+}
+/*style items (options):*/
+.select-items {
+    position: absolute;
+    background-color: #ae1212;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 99;
+}
+/*hide the items when the select box is closed:*/
+.select-hide {
+    display: none;
+}
+
+.select-items div:hover, .same-as-selected {
+    background-color: #000000;
+}

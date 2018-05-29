@@ -1,11 +1,32 @@
-﻿.logo {
+﻿body {
+    background-color:white;
+}
+video
+{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    min-width:100%;
+    min-height:100%;
+    width:auto;
+    height:auto;
+    background:transparent;
+}
+logo {
     width: 180px;
     height: 124px;
     cursor: pointer;
 }
-
+.mapp{
+    position:relative;
+    top:200px;
+}
 .Buttons-Container {
-    margin-bottom: 25px;
+    margin-bottom: 75px;
+    position:absolute;
+    top:10%;
+    right:40%;
 }
 
 .Header-Name {
@@ -14,6 +35,8 @@
 }
 
 .Header {
+    background:transparent;
+    position:absolute;
 }
 
 .btn {
@@ -23,4 +46,30 @@
     color: #000000;
     font-size: 20px;
     font-family: 'Microsoft YaHei';
+}
+.text-container
+{
+    position:absolute;
+    top:40%;
+    right:10%;
+}
+.table1{
+    position:relative;
+    left:30%;
+}
+.text1{
+    color: white;
+    font-size:50px;
+}
+.text2 {
+    color: white;
+    font-size: 30px;
+}
+.text3 {
+    color: white;
+    font-size: 30px;
+}
+.text4 {
+    color: white;
+    font-size: 30px;
 }
