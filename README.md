@@ -15,3 +15,5 @@ Yra:
 
 Galima padaryti:
 - Genetinio algoritmo optimizacija.
+
+Projekto pabaigiamumas:90%
